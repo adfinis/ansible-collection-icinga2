@@ -2,16 +2,16 @@
 ROLE _TEMPLATE
 ===============
 
-.. image:: https://img.shields.io/github/license/adfinis-sygroup/ansible-role-_template.svg?style=flat-square
-  :target: https://github.com/adfinis-sygroup/ansible-role-_template/blob/master/LICENSE
+.. image:: https://img.shields.io/github/license/adfinis-sygroup/ansible-role-icinga2_agent.svg?style=flat-square
+  :target: https://github.com/adfinis-sygroup/ansible-role-icinga2_agent/blob/master/LICENSE
 
-.. image:: https://img.shields.io/travis/adfinis-sygroup/ansible-role-_template.svg?style=flat-square
-  :target: https://travis-ci.org/adfinis-sygroup/ansible-role-_template
+.. image:: https://img.shields.io/travis/adfinis-sygroup/ansible-role-icinga2_agent.svg?style=flat-square
+  :target: https://travis-ci.org/adfinis-sygroup/ansible-role-icinga2_agent
 
-.. image:: https://img.shields.io/badge/galaxy-adfinis--sygroup._template-660198.svg?style=flat-square
-  :target: https://galaxy.ansible.com/adfinis-sygroup/_template
+.. image:: https://img.shields.io/badge/galaxy-adfinis--sygroup.icinga2_agent-660198.svg?style=flat-square
+  :target: https://galaxy.ansible.com/adfinis-sygroup/icinga2_agent
 
-A brief description of the role goes here.
+This role is used to install the Icinga2 agent.
 
 
 Requirements
@@ -35,9 +35,8 @@ should be mentioned here as well.
 Dependencies
 =============
 
-A list of other roles hosted on Galaxy should go here, plus any details in
-regards to parameters that may need to be set for other roles, or variables
-that are used from other roles.
+This role depends on the EPEL repositories if used on EL based systems.
+The following role is suggested: `pkg_mirror <https://galaxy.ansible.com/adfinis-sygroup/pkg_mirror>`_
 
 
 Example Playbook
@@ -50,19 +49,19 @@ passed in as parameters) is always nice for users too:
 
   - hosts: servers
     roles:
-       - { role: adfinis-sygroup._template }
+       - { role: adfinis-sygroup.icinga2_agent }
 
 
 License
 ========
 
-`GPL-3.0 <https://github.com/adfinis-sygroup/ansible-role-_template/blob/master/LICENSE>`_
+`GPL-3.0 <https://github.com/adfinis-sygroup/ansible-role-icinga2_agent/blob/master/LICENSE>`_
 
 
 Author Information
 ===================
 
-_template role was written by:
+icinga2_agent role was written by:
 
 * Adfinis SyGroup AG | `Website <https://www.adfinis-sygroup.ch/>`_ | `Twitter <https://twitter.com/adfinissygroup>`_ | `GitHub <https://github.com/adfinis-sygroup>`_
 

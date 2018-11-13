@@ -3,7 +3,7 @@
 dependencies: []
 
 galaxy_info:
-  role_name: '_template'
+  role_name: 'icinga2_agent'
   author: 'Adfinis SyGroup AG'
   description: ''
   company: 'Adfinis SyGroup AG'
