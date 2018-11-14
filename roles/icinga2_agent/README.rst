@@ -35,9 +35,9 @@ Role Variables
   
   icinga2_agent_apt:
     # The Icinga apt repository
-    repo: "deb https://packages.icinga.com/{{ ansible_distribution|lower }} icinga-{{ ansible_distribution_release }} main"
+    repo: "deb http://packages.icinga.com/{{ ansible_distribution|lower }} icinga-{{ ansible_distribution_release }} main"
     # The icinga signing key
-    key: "https://packages.icinga.com/icinga.key"
+    key: "http://packages.icinga.com/icinga.key"
 
 
 Dependencies
