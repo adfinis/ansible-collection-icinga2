@@ -1,1 +1,26 @@
 ---
+
+- name: install icinga apt key
+  apt_key:
+    url: '{{ icinga2_agent_apt.key }}'
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: configure icinga apt repository
+  apt_repository:
+    repo: '{{ icinga2_agent_apt.repo }}'
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: configure icinga epel repository
+  yum_repository:
+    name: icinga-stable-release
+    description: icinga2 latest repository
+    baseurl: '{{ icinga2_agent_yum.repo }}'
+    gpgkey: '{{ icinga2_agent_yum.key }}'
+  when: ansible_os_family == 'RedHat'
+
+- name: install icinga 2 agent packages
+  package:
+    name: '{{ icinga2_agent_packages }}'
+    state: present
