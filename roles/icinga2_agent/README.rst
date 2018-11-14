@@ -1,6 +1,6 @@
-===============
-ROLE _TEMPLATE
-===============
+==================
+ROLE ICINGA2_AGENT
+==================
 
 .. image:: https://img.shields.io/github/license/adfinis-sygroup/ansible-role-icinga2_agent.svg?style=flat-square
   :target: https://github.com/adfinis-sygroup/ansible-role-icinga2_agent/blob/master/LICENSE
@@ -11,39 +11,42 @@ ROLE _TEMPLATE
 .. image:: https://img.shields.io/badge/galaxy-adfinis--sygroup.icinga2_agent-660198.svg?style=flat-square
   :target: https://galaxy.ansible.com/adfinis-sygroup/icinga2_agent
 
-This role is used to install the Icinga2 agent.
+This role is used to install the Icinga2 agent and the nagios plugins.
 
 
 Requirements
 =============
 
-Any pre-requisites that may not be covered by Ansible itself or the role
-should be mentioned here. For instance, if the role uses the EC2 module, it
-may be a good idea to mention in this section that the boto package is required.
+This role requires the EPEL repositories to be configured on the target system.
+The following role is suggested: `adfinis-sygroup.pkg_mirror
+<https://galaxy.ansible.com/adfinis-sygroup/pkg_mirror>`_
 
 
 Role Variables
 ===============
 
-A description of the settable variables for this role should go here, including
-any variables that are in defaults/main.yml, vars/main.yml, and any variables
-that can/should be set via parameters to the role. Any variables that are read
-from other roles and/or the global scope (ie. hostvars, group vars, etc.)
-should be mentioned here as well.
+.. code-block:: yaml
+
+  icinga2_agent_yum:
+    # The Icinga yum repository
+    repo: "http://packages.icinga.com/epel/$releasever/release/"
+    # The icinga signing key
+    key: "http://packages.icinga.com/icinga.key"
+  
+  icinga2_agent_apt:
+    # The Icinga apt repository
+    repo: "deb https://packages.icinga.com/{{ ansible_distribution|lower }} icinga-{{ ansible_distribution_release }} main"
+    # The icinga signing key
+    key: "https://packages.icinga.com/icinga.key"
 
 
 Dependencies
 =============
 
-This role depends on the EPEL repositories if used on EL based systems.
-The following role is suggested: `pkg_mirror <https://galaxy.ansible.com/adfinis-sygroup/pkg_mirror>`_
-
+This role has no direct dependency to other roles.
 
 Example Playbook
 =================
-
-Including an example of how to use your role (for instance, with variables
-passed in as parameters) is always nice for users too:
 
 .. code-block:: yaml
 
@@ -64,4 +67,3 @@ Author Information
 icinga2_agent role was written by:
 
 * Adfinis SyGroup AG | `Website <https://www.adfinis-sygroup.ch/>`_ | `Twitter <https://twitter.com/adfinissygroup>`_ | `GitHub <https://github.com/adfinis-sygroup>`_
-
