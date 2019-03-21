@@ -24,3 +24,9 @@
   package:
     name: '{{ icinga2_agent_packages }}'
     state: present
+
+- name: start and enable icinga2
+  service:
+    name: icinga2
+    enabled: yes
+    state: started
