@@ -46,14 +46,14 @@
   package:
     name: '{{ icinga2_agent_packages }}'
     state: present
-  when: ansible_distribution_major_version != 'RedHat'
+  when: ansible_os_family != 'RedHat'
   
 - name: install icinga 2 agent packages
   yum:
     name: '{{ icinga2_agent_packages }}'
     enablerepo: epel
     state: present
-  when: ansible_distribution_major_version 'RedHat'
+  when: ansible_os_family == 'RedHat'
 
 - name: start and enable icinga2
   service:
