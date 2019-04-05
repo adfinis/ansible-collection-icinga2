@@ -10,8 +10,9 @@
   yum_repository:
     name: epel
     baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
-    description: Fedora EPEL
+    description: Extra Packages for Enterprise Linux 7 - $basearch
     enabled: no
+    gpgkey: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}'   
   when: ansible_distribution == 'RedHat'
 
 - name: import epel gpg key.
@@ -45,6 +46,14 @@
   package:
     name: '{{ icinga2_agent_packages }}'
     state: present
+  when: ansible_distribution_major_version != 'RedHat'
+  
+- name: install icinga 2 agent packages
+  yum:
+    name: '{{ icinga2_agent_packages }}'
+    enablerepo: epel
+    state: present
+  when: ansible_distribution_major_version 'RedHat'
 
 - name: start and enable icinga2
   service:
