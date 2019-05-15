@@ -12,7 +12,7 @@
     baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
     description: Extra Packages for Enterprise Linux 7 - $basearch
     enabled: no
-    gpgkey: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}'   
+    gpgkey: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}'
   when: ansible_distribution == 'RedHat'
 
 - name: import epel gpg key.
@@ -47,7 +47,7 @@
     name: '{{ icinga2_agent_packages }}'
     state: present
   when: ansible_os_family != 'RedHat'
-  
+
 - name: install icinga 2 agent packages
   yum:
     name: '{{ icinga2_agent_packages }}'
