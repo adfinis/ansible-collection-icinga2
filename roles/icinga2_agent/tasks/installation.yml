@@ -33,6 +33,19 @@
     repo: '{{ icinga2_agent_apt.repo }}'
     state: present
   when: ansible_os_family == 'Debian'
+  notify: update package repository
+
+- name: configure stretch-backports repository
+  apt_repository:
+    repo: '{{ stretch_backports_apt.repo }}'
+    state: present
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_distribution_major_version == '9'
+  notify: update package repository
+
+- name: flush handlers
+  meta: flush_handlers
 
 - name: configure icinga epel repository
   yum_repository:
