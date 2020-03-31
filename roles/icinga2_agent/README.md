@@ -16,6 +16,8 @@ This role requires the EPEL repositories to be configured on the target
 system. The following role is suggested:
 [adfinis-sygroup.pkg\_mirror](https://galaxy.ansible.com/adfinis-sygroup/pkg_mirror)
 
+On RHEL and OracleLinux the optional repo needs to be configured on the target system as well.
+
 Role Variables
 --------------
 

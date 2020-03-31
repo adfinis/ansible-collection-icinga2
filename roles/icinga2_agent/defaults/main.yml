@@ -13,3 +13,6 @@ icinga2_agent_apt:
 # The apt repository for stretch-backports
 stretch_backports_apt:
   repo: "deb http://deb.debian.org/debian stretch-backports main"
+
+# The yum repo for dependencies
+icinga2_agent_packages_enablerepo: epel

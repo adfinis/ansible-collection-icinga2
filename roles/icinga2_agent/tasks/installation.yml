@@ -64,7 +64,7 @@
 - name: install icinga 2 agent packages
   yum:
     name: '{{ icinga2_agent_packages }}'
-    enablerepo: epel
+    enablerepo: '{{ icinga2_agent_packages_enablerepo }}'
     state: present
   when: ansible_os_family == 'RedHat'
 
