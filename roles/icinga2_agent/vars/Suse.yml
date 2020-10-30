@@ -1,0 +1,5 @@
+---
+
+icinga2_agent_packages:
+  - icinga2
+  - nagios-plugins-all
