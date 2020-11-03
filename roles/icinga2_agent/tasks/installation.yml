@@ -41,7 +41,7 @@
     state: present
   when:
     - ansible_os_family == 'Debian'
-    - ansible_distribution_major_version == '9'
+    - ansible_distribution_release == 'stretch'
   notify: update package repository
 
 - name: flush handlers
