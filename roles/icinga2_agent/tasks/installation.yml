@@ -32,7 +32,9 @@
   apt_repository:
     repo: '{{ icinga2_agent_apt.repo }}'
     state: present
-  when: ansible_os_family == 'Debian'
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_lsb.id != 'Univention'
   notify: update package repository
 
 - name: configure stretch-backports repository
