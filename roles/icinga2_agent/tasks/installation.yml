@@ -32,7 +32,9 @@
   apt_repository:
     repo: '{{ icinga2_agent_apt.repo }}'
     state: present
-  when: ansible_os_family == 'Debian'
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_lsb.id != 'Univention'
   notify: update package repository
 
 - name: configure stretch-backports repository
@@ -41,7 +43,7 @@
     state: present
   when:
     - ansible_os_family == 'Debian'
-    - ansible_distribution_major_version == '9'
+    - ansible_distribution_release == 'stretch'
   notify: update package repository
 
 - name: flush handlers
