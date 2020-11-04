@@ -57,6 +57,12 @@
     gpgkey: '{{ icinga2_agent_yum.key }}'
   when: ansible_os_family == 'RedHat'
 
+- name: configure icinga suse repository
+  zypper_repository:
+    repo: '{{ icinga2_agent_suse.repo }}'
+    auto_import_keys: yes
+  when: ansible_os_family == 'Suse'
+
 - name: install icinga 2 agent packages
   package:
     name: '{{ icinga2_agent_packages }}'
