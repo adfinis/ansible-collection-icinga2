@@ -34,7 +34,7 @@
     state: present
   when:
     - ansible_os_family == 'Debian'
-    - ansible_lsb.id != 'Univention'
+    - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
   notify: update package repository
 
 - name: configure stretch-backports repository
