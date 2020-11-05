@@ -57,11 +57,32 @@
     gpgkey: '{{ icinga2_agent_yum.key }}'
   when: ansible_os_family == 'RedHat'
 
+- name: fetch icinga suse repo file
+  uri:
+    url: '{{ icinga2_agent_suse.repo }}'
+    return_content: yes
+  check_mode: no
+  register: icinga2_agent_register_suse_repo_file
+  when: ansible_os_family == 'Suse'
+
+- name: parse icinga suse repo file
+  set_fact:
+    icinga2_agent_icinga_suse_repo_name: '{{ icinga2_agent_register_suse_repo_file.content.splitlines()[0][1:-1] }}'
+  when: ansible_os_family == 'Suse'
+
+- name: check if icinga suse repository already exists
+  stat:
+    path: /etc/zypp/repos.d/{{ icinga2_agent_icinga_suse_repo_name }}.repo
+  check_mode: no
+  register: icinga2_agent_register_icinga_suse_repo_stat
+  when: ansible_os_family == 'Suse'
+
 - name: configure icinga suse repository
   zypper_repository:
     repo: '{{ icinga2_agent_suse.repo }}'
-    auto_import_keys: yes
-  when: ansible_os_family == 'Suse'
+  when:
+  - ansible_os_family == 'Suse'
+  - not icinga2_agent_register__icinga_suse_repo_stat.stat.exists
 
 - name: install icinga 2 agent packages
   package:
