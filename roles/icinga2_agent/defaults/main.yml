@@ -12,7 +12,7 @@ icinga2_agent_apt:
 
 # The suse repository and key from Icinga
 icinga2_agent_suse:
-  repo: "https://packages.icinga.com/SUSE/ICINGA-release.repo"
+  repo: "http://packages.icinga.com/SUSE/ICINGA-release.repo"
 
 # The apt repository for stretch-backports
 stretch_backports_apt:
