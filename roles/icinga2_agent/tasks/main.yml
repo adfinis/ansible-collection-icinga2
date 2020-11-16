@@ -10,6 +10,26 @@
     - 'role::icinga2_agent'
     - 'role::icinga2_agent:install'
 
+- name: set packages enable repo
+  set_fact:
+    icinga2_agent_packages_enablerepo: '{{ icinga2_agent_packages_enablerepo_override }}'
+  when:
+    - icinga2_agent_packages_enablerepo_override | length > 0
+    - ansible_os_family == 'RedHat'
+  tags:
+    - 'role::icinga2_agent'
+    - 'role::icinga2_agent:install'
+
+- name: set packages list
+  set_fact:
+    icinga2_agent_packages: '{{ icinga2_agent_packages_override }}'
+  when:
+    - icinga2_agent_packages_override | length > 0
+    - ansible_os_family == 'RedHat'
+  tags:
+    - 'role::icinga2_agent'
+    - 'role::icinga2_agent:install'
+
 - import_tasks: installation.yml
   tags:
     - 'role::icinga2_agent'

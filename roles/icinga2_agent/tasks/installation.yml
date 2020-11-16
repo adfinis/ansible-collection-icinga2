@@ -9,7 +9,7 @@
 - name: deactivate the epel repository
   yum_repository:
     name: epel
-    baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+    baseurl: '{{ icinga2_agent_yum_epel_baseurl }}'
     description: Extra Packages for Enterprise Linux 7 - $basearch
     enabled: no
     gpgkey: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}'
@@ -55,6 +55,25 @@
     description: icinga2 latest repository
     baseurl: '{{ icinga2_agent_yum.repo }}'
     gpgkey: '{{ icinga2_agent_yum.key }}'
+  when: ansible_os_family == 'RedHat'
+
+- name: configure extra yum repos
+  yum_repository:
+    name: '{{ item.name }}'
+    file: '{{ item.file | default(item.name) }}'
+    description: '{{ item.description }}'
+    baseurl: '{{ item.baseurl | default(omit) }}'
+    mirrorlist: '{{ item.mirrorlist | default(omit) }}'
+    repo_gpgcheck: '{{ item.repo_gpgcheck | default(omit) }}'
+    gpgcheck: '{{ item.gpgcheck | default("yes") }}'
+    gpgkey: '{{ item.gpgkey | default(omit) }}'
+    enabled: '{{ item.enabled | default("no") }}'
+    state: present
+    seuser: system_u
+    serole: object_r
+    setype: system_conf_t
+    selevel: s0
+  with_items: '{{ icinga2_agent_yum_extra_repos }}'
   when: ansible_os_family == 'RedHat'
 
 - name: fetch icinga suse repo file
