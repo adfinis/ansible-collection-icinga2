@@ -21,6 +21,9 @@ stretch_backports_apt:
 # The yum repo for dependencies
 icinga2_agent_packages_enablerepo: epel
 
+# Base url of the epel repository
+icinga2_agent_yum_epel_baseurl: https://download.fedoraproject.org/pub/epel/$releasever/$basearch/
+
 # Extra yum repositories to be added
 # Example:
 # icinga2_agent_yum_extra_repos:
