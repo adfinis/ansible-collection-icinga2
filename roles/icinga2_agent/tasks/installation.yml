@@ -1,5 +1,12 @@
 ---
 
+- name: install dependencies for debian-based distributions
+  apt:
+    name: ' {{ item }}'
+    state: present
+  loop: icinga2_agent_debian_dependencies
+  when: ansible_distribution == 'Debian'
+
 - name: install fedora epel repository
   yum:
     name: 'https://pkg.adfinis-sygroup.ch/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm'
