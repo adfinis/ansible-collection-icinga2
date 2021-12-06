@@ -1,5 +1,8 @@
 ---
 
+icinga2_agent_debian_dependencies:
+  - gnupg2
+
 icinga2_agent_packages:
   - icinga2
   - nagios-plugins
