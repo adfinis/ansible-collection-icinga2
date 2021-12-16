@@ -4,7 +4,7 @@
   apt:
     name: ' {{ item }}'
     state: present
-  loop: icinga2_agent_debian_dependencies
+  loop: '{{ icinga2_agent_debian_dependencies }}'
   when: ansible_distribution == 'Debian'
 
 - name: install fedora epel repository
