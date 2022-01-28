@@ -107,8 +107,8 @@
   zypper_repository:
     repo: '{{ icinga2_agent_suse.repo }}'
   when:
-  - ansible_os_family == 'Suse'
-  - not icinga2_agent_register_icinga_suse_repo_stat.stat.exists
+    - ansible_os_family == 'Suse'
+    - not icinga2_agent_register_icinga_suse_repo_stat.stat.exists
 
 - name: install icinga 2 agent packages
   package:
