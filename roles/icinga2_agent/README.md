@@ -1,11 +1,11 @@
 ROLE ICINGA2\_AGENT
 ===================
 
-[![image](https://img.shields.io/github/license/adfinis-sygroup/ansible-role-icinga2_agent.svg?style=flat-square)](https://github.com/adfinis-sygroup/ansible-role-icinga2_agent/blob/master/LICENSE)
+[![image](https://img.shields.io/github/license/adfinis/ansible-role-icinga2_agent.svg?style=flat-square)](https://github.com/adfinis/ansible-role-icinga2_agent/blob/master/LICENSE)
 
-[![image](https://img.shields.io/travis/adfinis-sygroup/ansible-role-icinga2_agent.svg?style=flat-square)](https://travis-ci.org/adfinis-sygroup/ansible-role-icinga2_agent)
+[![image](https://img.shields.io/github/actions/workflow/status/adfinis/ansible-role-icinga2_agent/ansible-ci.yml?style=flat-square)](https://github.com/adfinis/ansible-role-icinga2_agent/actions)
 
-[![image](https://img.shields.io/badge/galaxy-adfinis--sygroup.icinga2_agent-660198.svg?style=flat-square)](https://galaxy.ansible.com/adfinis-sygroup/icinga2_agent)
+[![image](https://img.shields.io/badge/galaxy-adfinis.icinga2_agent-660198.svg?style=flat-square)](https://galaxy.ansible.com/adfinis/icinga2_agent)
 
 This role is used to install the Icinga2 agent and the nagios plugins.
 
@@ -14,7 +14,7 @@ Requirements
 
 This role requires the EPEL repositories to be configured on the target
 system. The following role is suggested:
-[adfinis-sygroup.pkg\_mirror](https://galaxy.ansible.com/adfinis-sygroup/pkg_mirror)
+[adfinis.pkg\_mirror](https://galaxy.ansible.com/adfinis/pkg_mirror)
 
 On RHEL and OracleLinux the optional repo needs to be configured on the target system as well.
 
@@ -46,19 +46,19 @@ Example Playbook
 ``` {.sourceCode .yaml}
 - hosts: servers
   roles:
-     - { role: adfinis-sygroup.icinga2_agent }
+     - { role: adfinis.icinga2_agent }
 ```
 
 License
 -------
 
-[GPL-3.0](https://github.com/adfinis-sygroup/ansible-role-icinga2_agent/blob/master/LICENSE)
+[GPL-3.0](https://github.com/adfinis/ansible-role-icinga2_agent/blob/master/LICENSE)
 
 Author Information
 ------------------
 
 icinga2\_agent role was written by:
 
--   Adfinis SyGroup AG \| [Website](https://www.adfinis-sygroup.ch/) \|
-    [Twitter](https://twitter.com/adfinissygroup) \|
-    [GitHub](https://github.com/adfinis-sygroup)
+-   Adfinis AG \| [Website](https://www.adfinis.com/) \|
+    [Twitter](https://twitter.com/adfinis) \|
+    [GitHub](https://github.com/adfinis)

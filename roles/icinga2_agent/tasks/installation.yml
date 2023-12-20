@@ -1,130 +1,128 @@
 ---
-
-- name: install dependencies for debian-based distributions
-  apt:
-    name: ' {{ item }}'
+- name: Install dependencies for debian-based distributions
+  ansible.builtin.apt:
+    name: " {{ item }}"
     state: present
-  loop: '{{ icinga2_agent_debian_dependencies }}'
+  loop: "{{ icinga2_agent_debian_dependencies }}"
   when: ansible_distribution == 'Debian'
 
-- name: install fedora epel repository
-  yum:
-    name: 'https://pkg.adfinis-sygroup.ch/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm'
+- name: Install fedora epel repository
+  ansible.builtin.yum:
+    name: https://pkg.adfinis-sygroup.ch/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: present
   when: ansible_distribution == 'RedHat'
 
-- name: deactivate the epel repository
-  yum_repository:
+- name: Deactivate the epel repository
+  ansible.builtin.yum_repository:
     name: epel
-    baseurl: '{{ icinga2_agent_yum_epel_baseurl }}'
+    baseurl: "{{ icinga2_agent_yum_epel_baseurl }}"
     description: Extra Packages for Enterprise Linux 7 - $basearch
-    enabled: no
-    gpgkey: 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}'
+    enabled: false
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
   when: ansible_distribution == 'RedHat'
 
-- name: import epel gpg key.
-  rpm_key:
-    key: '/etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}'
+- name: Import epel gpg key.
+  ansible.builtin.rpm_key:
+    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
     state: present
   when: ansible_distribution == 'RedHat'
-  ignore_errors: '{{ ansible_check_mode }}'
+  ignore_errors: "{{ ansible_check_mode }}"
 
-- name: install icinga apt key
-  apt_key:
-    url: '{{ icinga2_agent_apt.key }}'
+- name: Install icinga apt key
+  ansible.builtin.apt_key:
+    url: "{{ icinga2_agent_apt.key }}"
     state: present
   when: ansible_os_family == 'Debian'
 
-- name: configure icinga apt repository
-  apt_repository:
-    repo: '{{ icinga2_agent_apt.repo }}'
+- name: Configure icinga apt repository
+  ansible.builtin.apt_repository:
+    repo: "{{ icinga2_agent_apt.repo }}"
     state: present
   when:
     - ansible_os_family == 'Debian'
     - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
   notify: update package repository
 
-- name: configure stretch-backports repository
-  apt_repository:
-    repo: '{{ stretch_backports_apt.repo }}'
+- name: Configure stretch-backports repository
+  ansible.builtin.apt_repository:
+    repo: "{{ stretch_backports_apt.repo }}"
     state: present
   when:
     - ansible_os_family == 'Debian'
     - ansible_distribution_release == 'stretch'
   notify: update package repository
 
-- name: flush handlers
-  meta: flush_handlers
-
-- name: configure icinga epel repository
-  yum_repository:
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+- name: Configure icinga epel repository
+  ansible.builtin.yum_repository:
     name: icinga-stable-release
     description: icinga2 latest repository
-    baseurl: '{{ icinga2_agent_yum.repo }}'
-    gpgkey: '{{ icinga2_agent_yum.key }}'
+    baseurl: "{{ icinga2_agent_yum.repo }}"
+    gpgkey: "{{ icinga2_agent_yum.key }}"
   when: ansible_os_family == 'RedHat'
 
-- name: configure extra yum repos
-  yum_repository:
-    name: '{{ item.name }}'
-    file: '{{ item.file | default(item.name) }}'
-    description: '{{ item.description }}'
-    baseurl: '{{ item.baseurl | default(omit) }}'
-    mirrorlist: '{{ item.mirrorlist | default(omit) }}'
-    repo_gpgcheck: '{{ item.repo_gpgcheck | default(omit) }}'
+- name: Configure extra yum repos
+  ansible.builtin.yum_repository:
+    name: "{{ item.name }}"
+    file: "{{ item.file | default(item.name) }}"
+    description: "{{ item.description }}"
+    baseurl: "{{ item.baseurl | default(omit) }}"
+    mirrorlist: "{{ item.mirrorlist | default(omit) }}"
+    repo_gpgcheck: "{{ item.repo_gpgcheck | default(omit) }}"
     gpgcheck: '{{ item.gpgcheck | default("yes") }}'
-    gpgkey: '{{ item.gpgkey | default(omit) }}'
+    gpgkey: "{{ item.gpgkey | default(omit) }}"
     enabled: '{{ item.enabled | default("no") }}'
     state: present
     seuser: system_u
     serole: object_r
     setype: system_conf_t
     selevel: s0
-  with_items: '{{ icinga2_agent_yum_extra_repos }}'
+  with_items: "{{ icinga2_agent_yum_extra_repos }}"
   when: ansible_os_family == 'RedHat'
 
-- name: fetch icinga suse repo file
-  uri:
-    url: '{{ icinga2_agent_suse.repo }}'
-    return_content: yes
-  check_mode: no
+- name: Fetch icinga suse repo file
+  ansible.builtin.uri:
+    url: "{{ icinga2_agent_suse.repo }}"
+    return_content: true
+  check_mode: false
   register: icinga2_agent_register_suse_repo_file
   when: ansible_os_family == 'Suse'
 
-- name: parse icinga suse repo file
-  set_fact:
-    icinga2_agent_icinga_suse_repo_name: '{{ icinga2_agent_register_suse_repo_file.content.splitlines()[0][1:-1] }}'
+- name: Parse icinga suse repo file
+  ansible.builtin.set_fact:
+    icinga2_agent_icinga_suse_repo_name: "{{ icinga2_agent_register_suse_repo_file.content.splitlines()[0][1:-1] }}"
   when: ansible_os_family == 'Suse'
 
-- name: check if icinga suse repository already exists
-  stat:
+- name: Check if icinga suse repository already exists
+  ansible.builtin.stat:
     path: /etc/zypp/repos.d/{{ icinga2_agent_icinga_suse_repo_name }}.repo
-  check_mode: no
+  check_mode: false
   register: icinga2_agent_register_icinga_suse_repo_stat
   when: ansible_os_family == 'Suse'
 
-- name: configure icinga suse repository
-  zypper_repository:
-    repo: '{{ icinga2_agent_suse.repo }}'
+- name: Configure icinga suse repository
+  community.general.zypper_repository:
+    repo: "{{ icinga2_agent_suse.repo }}"
   when:
     - ansible_os_family == 'Suse'
     - not icinga2_agent_register_icinga_suse_repo_stat.stat.exists
 
-- name: install icinga 2 agent packages
-  package:
-    name: '{{ icinga2_agent_packages }}'
+- name: Install icinga 2 agent packages
+  ansible.builtin.package:
+    name: "{{ icinga2_agent_packages }}"
     state: present
   when: ansible_os_family != 'RedHat'
 
-- name: install icinga 2 agent packages
-  yum:
-    name: '{{ icinga2_agent_packages }}'
-    enablerepo: '{{ icinga2_agent_packages_enablerepo }}'
+- name: Install icinga 2 agent packages
+  ansible.builtin.yum:
+    name: "{{ icinga2_agent_packages }}"
+    enablerepo: "{{ icinga2_agent_packages_enablerepo }}"
     state: present
   when: ansible_os_family == 'RedHat'
 
-- name: start and enable icinga2
-  service:
+- name: Start and enable icinga2
+  ansible.builtin.service:
     name: icinga2
-    enabled: yes
+    enabled: true
     state: started

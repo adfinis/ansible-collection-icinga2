@@ -1,6 +1,7 @@
 ---
 
-- hosts: localhost
+- name: Test roles
+  hosts: localhost
   remote_user: root
   roles:
-    - icinga2_agent
+    - adfinis.icinga2_agent
