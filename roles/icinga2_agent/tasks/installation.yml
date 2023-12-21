@@ -41,7 +41,7 @@
   when:
     - ansible_os_family == 'Debian'
     - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
-  notify: update package repository
+  notify: Update package repository
 
 - name: Configure stretch-backports repository
   ansible.builtin.apt_repository:
@@ -50,7 +50,7 @@
   when:
     - ansible_os_family == 'Debian'
     - ansible_distribution_release == 'stretch'
-  notify: update package repository
+  notify: Update package repository
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
