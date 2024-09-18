@@ -3,11 +3,12 @@
   ansible.builtin.apt:
     name: " {{ item }}"
     state: present
+    update_cache: true
   loop: "{{ icinga2_agent_debian_dependencies }}"
   when: ansible_distribution == 'Debian'
 
 - name: Install fedora epel repository
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: https://pkg.adfinis-sygroup.ch/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: present
   when: ansible_distribution == 'RedHat'
@@ -31,6 +32,7 @@
 - name: Install icinga apt key
   ansible.builtin.apt_key:
     url: "{{ icinga2_agent_apt.key }}"
+    keyring: /usr/share/keyrings/icinga-archive-keyring.gpg
     state: present
   when: ansible_os_family == 'Debian'
 
@@ -115,7 +117,7 @@
   when: ansible_os_family != 'RedHat'
 
 - name: Install icinga 2 agent packages
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "{{ icinga2_agent_packages }}"
     enablerepo: "{{ icinga2_agent_packages_enablerepo }}"
     state: present

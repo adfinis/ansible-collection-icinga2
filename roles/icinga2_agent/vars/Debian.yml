@@ -5,4 +5,5 @@ icinga2_agent_debian_dependencies:
 
 icinga2_agent_packages:
   - icinga2
+  - icinga-archive-keyring
   - nagios-plugins
