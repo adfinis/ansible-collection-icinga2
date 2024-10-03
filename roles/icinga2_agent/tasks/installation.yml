@@ -1,4 +1,13 @@
 ---
+- name: Remove old icinga apt repository without key
+  ansible.builtin.apt_repository:
+    repo: "deb http://packages.icinga.com/{{ ansible_distribution | lower }} icinga-{{ ansible_distribution_release }} main"
+    state: absent
+  when:
+    - ansible_os_family == 'Debian'
+    - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
+  notify: Update package repository
+
 - name: Install dependencies for debian-based distributions
   ansible.builtin.apt:
     name: " {{ item }}"
@@ -45,15 +54,6 @@
     keyring: /usr/share/keyrings/icinga-archive-keyring.gpg
     state: present
   when: ansible_os_family == 'Debian'
-
-- name: Remove old icinga apt repository without key
-  ansible.builtin.apt_repository:
-    repo: "deb http://packages.icinga.com/{{ ansible_distribution | lower }} icinga-{{ ansible_distribution_release }} main"
-    state: absent
-  when:
-    - ansible_os_family == 'Debian'
-    - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
-  notify: Update package repository
 
 - name: Configure icinga apt repository
   ansible.builtin.apt_repository:
