@@ -18,19 +18,27 @@
 
 - name: Install fedora epel repository
   ansible.builtin.dnf:
-    name: https://pkg.adfinis-sygroup.ch/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    name: https://download.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
     state: present
   when:
     - ansible_os_family == 'RedHat'
     - ansible_distribution_major_version | int > 7
 
-- name: Install fedora epel repository for CentOS < 8  # noqa fqcn[action-core]
+- name: Install fedora epel repository for CentOS 7  # noqa fqcn[action-core]
   ansible.builtin.yum:
-    name: https://pkg.adfinis-sygroup.ch/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    name: https://archives.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
     state: present
   when:
     - ansible_os_family == 'RedHat'
-    - ansible_distribution_major_version | int < 8
+    - ansible_distribution_major_version | int == 7
+
+- name: Install fedora epel repository for CentOS 6  # noqa fqcn[action-core]
+  ansible.builtin.yum:
+    name: https://archives.fedoraproject.org/pub/archive/epel/6/x86_64/Packages/e/epel-release-6-8.noarch.rpm
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int == 6
 
 - name: Deactivate the epel repository
   ansible.builtin.yum_repository:
