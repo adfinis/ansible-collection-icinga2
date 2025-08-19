@@ -2,6 +2,7 @@
 
 icinga2_agent_debian_dependencies:
   - gnupg2
+  - python3-debian
 
 icinga2_agent_packages:
   - icinga2

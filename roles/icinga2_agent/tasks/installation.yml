@@ -8,6 +8,16 @@
     - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
   notify: Update package repository
 
+- name: Remove old icinga apt repository on Debian >= 13
+  ansible.builtin.apt_repository:
+    repo: "{{ icinga2_agent_apt.repo }}"
+    state: absent
+  when:
+    - ansible_os_family == 'Debian'
+    - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
+    - ansible_distribution_major_version | int >=13
+  notify: Update package repository
+
 - name: Install dependencies for debian-based distributions
   ansible.builtin.apt:
     name: " {{ item }}"
@@ -61,7 +71,9 @@
     url: "{{ icinga2_agent_apt.key }}"
     keyring: /usr/share/keyrings/icinga-archive-keyring.gpg
     state: present
-  when: ansible_os_family == 'Debian'
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_distribution_major_version | int < 13
 
 - name: Configure icinga apt repository
   ansible.builtin.apt_repository:
@@ -70,6 +82,22 @@
   when:
     - ansible_os_family == 'Debian'
     - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
+    - ansible_distribution_major_version | int < 13
+  notify: Update package repository
+
+- name: Configure icinga apt repository for Debian >=13
+  ansible.builtin.deb822_repository:
+    name: "{{ icinga2_agent_apt_deb822.name }}"
+    types: "deb"
+    uris: "{{ icinga2_agent_apt_deb822.uris }}"
+    suites: "{{ icinga2_agent_apt_deb822.suites }}"
+    components: "{{ icinga2_agent_apt_deb822.components }}"
+    signed_by: "{{ icinga2_agent_apt_deb822.signed_by }}"
+    state: present
+  when:
+    - ansible_os_family == 'Debian'
+    - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
+    - ansible_distribution_major_version | int >= 13
   notify: Update package repository
 
 - name: Configure stretch-backports repository

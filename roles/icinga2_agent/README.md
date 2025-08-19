@@ -33,6 +33,14 @@ icinga2_agent_apt:
   repo: "deb http://packages.icinga.com/{{ ansible_distribution|lower }} icinga-{{ ansible_distribution_release }} main"
   # The icinga signing key
   key: "http://packages.icinga.com/icinga.key"
+
+icinga2_agent_apt_deb822:
+  name: icinga2
+  uris: http://packages.icinga.com/{{ ansible_distribution | lower }}
+  suites: icinga-{{ ansible_distribution_release }
+  components:
+    - main
+  signed_by: http://packages.icinga.com/icinga.key
 ```
 
 Dependencies
