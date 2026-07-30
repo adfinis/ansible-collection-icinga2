@@ -1,0 +1,5 @@
+---
+- name: Update package repository
+  ansible.builtin.apt:
+    update_cache: true
+  when: ansible_os_family == 'Debian'

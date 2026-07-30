@@ -1,0 +1,196 @@
+---
+- name: Remove old icinga apt repository without key
+  ansible.builtin.apt_repository:
+    repo: "deb http://packages.icinga.com/{{ ansible_distribution | lower }} icinga-{{ ansible_distribution_release }} main"
+    state: absent
+  when:
+    - ansible_os_family == 'Debian'
+    - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
+  notify: Update package repository
+
+- name: Remove old icinga apt repository on Debian >= 13
+  ansible.builtin.apt_repository:
+    repo: "{{ icinga2_agent_apt.repo }}"
+    state: absent
+  when:
+    - ansible_os_family == 'Debian'
+    - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
+    - ansible_distribution_major_version | int >=13
+  notify: Update package repository
+
+- name: Install dependencies for debian-based distributions
+  ansible.builtin.apt:
+    name: " {{ item }}"
+    state: present
+    update_cache: true
+  loop: "{{ icinga2_agent_debian_dependencies }}"
+  when: ansible_distribution == 'Debian'
+
+- name: Install fedora epel repository
+  ansible.builtin.dnf:
+    name: https://download.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int > 7
+
+- name: Install fedora epel repository for CentOS 7  # noqa fqcn[action-core]
+  ansible.builtin.yum:
+    name: https://archives.fedoraproject.org/pub/archive/epel/7/x86_64/Packages/e/epel-release-7-14.noarch.rpm
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int == 7
+
+- name: Install fedora epel repository for CentOS 6  # noqa fqcn[action-core]
+  ansible.builtin.yum:
+    name: https://archives.fedoraproject.org/pub/archive/epel/6/x86_64/Packages/e/epel-release-6-8.noarch.rpm
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int == 6
+
+- name: Deactivate the epel repository
+  ansible.builtin.yum_repository:
+    name: epel
+    baseurl: "{{ icinga2_agent_yum_epel_baseurl }}"
+    description: Extra Packages for Enterprise Linux 7 - $basearch
+    enabled: false
+    gpgkey: file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+  when: ansible_distribution == 'RedHat'
+
+- name: Import epel gpg key.
+  ansible.builtin.rpm_key:
+    key: /etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-{{ ansible_distribution_major_version }}
+    state: present
+  when: ansible_distribution == 'RedHat'
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: Install icinga apt key
+  ansible.builtin.apt_key:
+    url: "{{ icinga2_agent_apt.key }}"
+    keyring: /usr/share/keyrings/icinga-archive-keyring.gpg
+    state: present
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_distribution_major_version | int < 13
+
+- name: Configure icinga apt repository
+  ansible.builtin.apt_repository:
+    repo: "{{ icinga2_agent_apt.repo }}"
+    state: present
+  when:
+    - ansible_os_family == 'Debian'
+    - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
+    - ansible_distribution_major_version | int < 13
+  notify: Update package repository
+
+- name: Configure icinga apt repository for Debian >=13
+  ansible.builtin.deb822_repository:
+    name: "{{ icinga2_agent_apt_deb822.name }}"
+    types: "deb"
+    uris: "{{ icinga2_agent_apt_deb822.uris }}"
+    suites: "{{ icinga2_agent_apt_deb822.suites }}"
+    components: "{{ icinga2_agent_apt_deb822.components }}"
+    signed_by: "{{ icinga2_agent_apt_deb822.signed_by }}"
+    state: present
+  when:
+    - ansible_os_family == 'Debian'
+    - (ansible_lsb.id != 'Univention' or ansible_distribution_release != 'stretch')
+    - ansible_distribution_major_version | int >= 13
+  notify: Update package repository
+
+- name: Configure stretch-backports repository
+  ansible.builtin.apt_repository:
+    repo: "{{ stretch_backports_apt.repo }}"
+    state: present
+  when:
+    - ansible_os_family == 'Debian'
+    - ansible_distribution_release == 'stretch'
+  notify: Update package repository
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+- name: Configure icinga epel repository
+  ansible.builtin.yum_repository:
+    name: icinga-stable-release
+    description: icinga2 latest repository
+    baseurl: "{{ icinga2_agent_yum.repo }}"
+    gpgkey: "{{ icinga2_agent_yum.key }}"
+  when: ansible_os_family == 'RedHat'
+
+- name: Configure extra yum repos
+  ansible.builtin.yum_repository:
+    name: "{{ item.name }}"
+    file: "{{ item.file | default(item.name) }}"
+    description: "{{ item.description }}"
+    baseurl: "{{ item.baseurl | default(omit) }}"
+    mirrorlist: "{{ item.mirrorlist | default(omit) }}"
+    repo_gpgcheck: "{{ item.repo_gpgcheck | default(omit) }}"
+    gpgcheck: '{{ item.gpgcheck | default("yes") }}'
+    gpgkey: "{{ item.gpgkey | default(omit) }}"
+    enabled: '{{ item.enabled | default("no") }}'
+    state: present
+    seuser: system_u
+    serole: object_r
+    setype: system_conf_t
+    selevel: s0
+  with_items: "{{ icinga2_agent_yum_extra_repos }}"
+  when: ansible_os_family == 'RedHat'
+
+- name: Fetch icinga suse repo file
+  ansible.builtin.uri:
+    url: "{{ icinga2_agent_suse.repo }}"
+    return_content: true
+  check_mode: false
+  register: icinga2_agent_register_suse_repo_file
+  when: ansible_os_family == 'Suse'
+
+- name: Parse icinga suse repo file
+  ansible.builtin.set_fact:
+    icinga2_agent_icinga_suse_repo_name: "{{ icinga2_agent_register_suse_repo_file.content.splitlines()[0][1:-1] }}"
+  when: ansible_os_family == 'Suse'
+
+- name: Check if icinga suse repository already exists
+  ansible.builtin.stat:
+    path: /etc/zypp/repos.d/{{ icinga2_agent_icinga_suse_repo_name }}.repo
+  check_mode: false
+  register: icinga2_agent_register_icinga_suse_repo_stat
+  when: ansible_os_family == 'Suse'
+
+- name: Configure icinga suse repository
+  community.general.zypper_repository:
+    repo: "{{ icinga2_agent_suse.repo }}"
+  when:
+    - ansible_os_family == 'Suse'
+    - not icinga2_agent_register_icinga_suse_repo_stat.stat.exists
+
+- name: Install icinga 2 agent packages
+  ansible.builtin.package:
+    name: "{{ icinga2_agent_packages }}"
+    state: present
+  when: ansible_os_family != 'RedHat'
+
+- name: Install icinga 2 agent packages
+  ansible.builtin.dnf:
+    name: "{{ icinga2_agent_packages }}"
+    enablerepo: "{{ icinga2_agent_packages_enablerepo }}"
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int > 7
+
+- name: Install icinga 2 agent packages for CentOS < 8  # noqa fqcn[action-core]
+  ansible.builtin.yum:
+    name: "{{ icinga2_agent_packages }}"
+    enablerepo: "{{ icinga2_agent_packages_enablerepo }}"
+    state: present
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version | int < 8
+
+- name: Start and enable icinga2
+  ansible.builtin.service:
+    name: icinga2
+    enabled: true
+    state: started
