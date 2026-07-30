@@ -1,0 +1,21 @@
+/**
+ *  {{ ansible_managed }}
+ *  Configuration from Icinga2 version r2.10.4
+ *
+ *  Icinga2 timeperiods
+ */
+
+{% for tp in icinga2_master_timeperiods %}
+object TimePeriod "{{ tp.name }}" {
+  display_name = "{{ tp.display_name }}"
+{% if tp.excludes is defined %}
+  excludes = [ "{{ tp.excludes | join('", "') }}" ]
+{% endif %}
+  ranges = {
+{% for range in tp.ranges %}
+    "{{ range.day }}" = "{{ range.time }}"
+{% endfor %}
+  }
+}
+
+{% endfor %}

@@ -1,0 +1,30 @@
+/**
+ *  {{ ansible_managed }}
+ *  Configuration from Icinga2 version r2.10.2-1
+ */
+
+{% for hostgroup in icinga2_master_hostgroups %}
+object HostGroup "{{ hostgroup.name }}" {
+{% if 'display_name' in hostgroup %}
+  display_name = "{{ hostgroup.display_name }}"
+{% endif %}
+{% for assignment in hostgroup.assignments %}
+{% if 'value' in assignment %}
+  assign where {{ assignment.var }} == "{{ assignment.value }}"
+{% else %}
+  assign where match("{{ assignment.match }}", {{ assignment.var }})
+{% endif %}
+{% endfor %}
+}
+{% endfor %}
+
+{% for servicegroup in icinga2_master_servicegroups %}
+object ServiceGroup "{{ servicegroup.name }}" {
+{% if 'display_name' in servicegroup %}
+  display_name = "{{ servicegroup.display_name }}"
+{% endif %}
+{% for assignment in servicegroup.assignments %}
+  assign where match("{{ assignment.match }}", {{ assignment.value }})
+{% endfor %}
+}
+{% endfor %}

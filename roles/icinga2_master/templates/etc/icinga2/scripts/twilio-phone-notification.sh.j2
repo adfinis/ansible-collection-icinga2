@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+#
+# Adfinis AG
+# https://github.com/adfinis/ansible-role-icinga2_master
+#
+# This script trigger telephone notifications using Twilio
+#
+# {{ ansible_managed }}
+
+
+account_sid="{{ icinga2_master_twilio_account_sid }}"
+auth_token="{{ icinga2_master_twilio_auth_token }}"
+phone_number="{{ icinga2_master_twilio_phone_from }}"
+{# Configure application sid or application url #}
+{% if icinga2_master_twilio_phone_application_sid is defined %}
+application="ApplicationSid={{ icinga2_master_twilio_phone_application_sid }}"
+{% elif icinga2_master_twilio_phone_application_url is defined %}
+application="Url={{ icinga2_master_twilio_phone_application_url }}"
+{% endif %}
+
+## Function helpers
+Usage() {
+cat << EOF
+
+Required parameters:
+  -r USERPHONE (\$user.pager\$)
+EOF
+}
+
+Help() {
+  Usage
+  exit 0
+}
+
+Error() {
+  if [ "$1" ] ; then
+    echo "$1"
+  fi
+  Usage
+  exit 1
+}
+
+## Main
+while getopts hr: opt
+do
+  case "$opt" in
+    h) Help ;;
+    r) USERPHONE=$OPTARG ;; # required
+   \?) echo "ERROR: Invalid option -$OPTARG" >&2
+       Error ;;
+    :) echo "Missing option argument for -$OPTARG" >&2
+       Error ;;
+    *) echo "Unimplemented option: -$OPTARG" >&2
+       Error ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
+# shellcheck disable=SC2043
+for P in USERPHONE ; do
+	eval "PAR=\$${P}"
+
+	if [ ! "$PAR" ] ; then
+		Error "Required parameter '$P' is missing."
+	fi
+done
+
+## Send the sms using the Twilio API
+echo "sent call to ${USERPHONE} now: $(date -u)" >> /var/log/icinga2/twilio.log
+
+curl -s -X POST -u "${account_sid}:${auth_token}" \
+  https://api.twilio.com/2010-04-01/Accounts/"${account_sid}"/Calls.json \
+  --data-urlencode "${application}" \
+  --data-urlencode "To=${USERPHONE}" \
+  --data-urlencode "From=${phone_number}"

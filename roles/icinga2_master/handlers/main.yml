@@ -1,0 +1,14 @@
+---
+- name: Icinga2_master reload icinga2
+  ansible.builtin.service:
+    name: icinga2
+    state: reloaded
+
+- name: Restart icingadb-redis
+  ansible.builtin.service:
+    name: icingadb-redis
+    state: restarted
+
+- name: Reload sysctl # noqa: no-changed-when
+  ansible.builtin.command:
+    cmd: /sbin/sysctl -p --system
