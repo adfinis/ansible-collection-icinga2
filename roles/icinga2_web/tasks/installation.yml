@@ -1,0 +1,177 @@
+---
+- name: Install icinga2 web packages
+  ansible.builtin.package:
+    name: "{{ icinga2_web_packages }}"
+    state: present
+
+- name: Install icingaDB web packages
+  ansible.builtin.package:
+    name: "{{ icinga2_web_icingadb_packages }}"
+    state: present
+  when: icinga2_web_use_icingadb
+
+# Allow httpd to connect to the mysql database
+- name: Set httpd_can_network_connect_db flag on and keep it persistent across reboots
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect_db
+    state: true
+    persistent: true
+  when: ansible_distribution == 'RedHat'
+
+# Allow httpd to connect to the network
+- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+  when: ansible_distribution == 'RedHat'
+
+- name: Check if icingaweb2 table and user in mysql exist (this might fail but thats expected)
+  ansible.builtin.shell: >
+    set -o pipefail;
+    mysql
+    --user={{ icinga2_web_database_user }}
+    --password={{ vault_icinga2_web_icingaweb2_database_pass }}
+    --host={{ icinga2_web_icingaweb2_database_host }}
+    --ssl-ca={{ icinga2_web_ca_path }}
+    {{ icinga2_web_icingaweb2_database_name }}
+    -e "SHOW TABLES;" | grep icingaweb_user
+  args:
+    executable: /bin/bash
+  register: icinga2_web_register_icingaweb2_imported
+  changed_when: icinga2_web_register_icingaweb2_imported.rc == 1
+  ignore_errors: true
+
+- name: Print return information from the previous task
+  ansible.builtin.debug:
+    var: icinga2_web_register_icingaweb2_imported.rc
+    verbosity: 2
+
+- name: Import icingaweb2 database schema
+  community.mysql.mysql_db:
+    name: "{{ icinga2_web_icingaweb2_database_name }}"
+    login_host: "{{ icinga2_web_icingaweb2_database_host }}"
+    login_port: "{{ icinga2_web_icingaweb2_database_port }}"
+    login_user: "{{ icinga2_web_database_user }}"
+    login_password: "{{ vault_icinga2_web_icingaweb2_database_pass }}"
+    ssl_ca: "{{ icinga2_web_ca_path }}"
+    state: import
+    target: "{{ icinga2_web_mysql_schema_sql_path }}"
+  run_once: true
+  when:
+    - not ansible_check_mode
+    - icinga2_web_register_icingaweb2_imported.rc == 1
+
+- name: Install icingaweb2 modules
+  ansible.builtin.package:
+    name: "{{ icinga2_web_modules }}"
+    state: present
+
+- name: Create icingaweb2 director user for background daemon
+  ansible.builtin.user:
+    name: icingadirector
+    group: icingaweb2
+    shell: /bin/false
+    home: /var/lib/icingadirector
+    system: true
+  when: icinga2_web_director | length != 0
+
+- name: Create home directory for icingaweb2 director daemon user
+  ansible.builtin.file:
+    name: /var/lib/icingadirector
+    state: directory
+    owner: icingadirector
+    group: icingaweb2
+    mode: "0750"
+    seuser: system_u
+    serole: object_r
+    setype: var_lib_t
+    selevel: s0
+  when: icinga2_web_director | length != 0
+
+- name: Install systemd service for icingaweb2 director daemon
+  ansible.builtin.copy:
+    src: /usr/share/icingaweb2/modules/director/contrib/systemd/icinga-director.service
+    remote_src: true
+    dest: /etc/systemd/system
+    mode: "0644"
+  when: icinga2_web_director | length != 0
+
+- name: Enable and start systemd service for icingaweb2 director daemon
+  ansible.builtin.systemd_service:
+    name: icinga-director.service
+    state: started
+    daemon_reload: true
+    enabled: true
+  when: icinga2_web_director | length != 0
+
+- name: Add grafana repository
+  ansible.builtin.yum_repository:
+    name: grafana
+    description: grafana
+    baseurl: https://packages.grafana.com/oss/rpm
+    repo_gpgcheck: true
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://packages.grafana.com/gpg.key
+    sslverify: true
+    sslcacert: /etc/pki/tls/certs/ca-bundle.crt
+  when:
+    - icinga2_web_grafana.enabled
+    - ansible_distribution == 'RedHat'
+
+- name: Install grafana
+  ansible.builtin.dnf:
+    name: grafana
+    state: present
+  when:
+    - icinga2_web_grafana.enabled
+    - ansible_distribution == 'RedHat'
+
+- name: Add grafana apt key for Debian < 12
+  ansible.builtin.apt_key:
+    id: 963FA27710458545
+    url: https://apt.grafana.com/gpg.key
+    state: present
+  when:
+    - icinga2_web_grafana.enabled
+    - ansible_distribution == 'Debian'
+    - ansible_distribution_major_version | int < 12
+
+- name: Add grafana repository for Debian < 12
+  ansible.builtin.apt_repository:
+    repo: deb https://apt.grafana.com stable main
+    state: present
+  when:
+    - icinga2_web_grafana.enabled
+    - ansible_distribution == 'Debian'
+    - ansible_distribution_major_version | int < 12
+
+- name: Configure icinga apt repository for Debian >= 12
+  ansible.builtin.deb822_repository:
+    name: grafana
+    types: deb
+    uris: https://apt.grafana.com
+    suites: stable
+    components: main
+    signed_by: https://apt.grafana.com/gpg.key
+    state: present
+  when:
+    - icinga2_web_grafana.enabled
+    - ansible_os_family == 'Debian'
+    - ansible_distribution_major_version | int >= 12
+
+- name: Install grafana
+  ansible.builtin.apt:
+    name: grafana
+  when:
+    - icinga2_web_grafana.enabled
+    - ansible_distribution == 'Debian'
+
+- name: Enable and start grafana service
+  ansible.builtin.systemd_service:
+    name: grafana-server
+    state: started
+    daemon_reload: true
+    enabled: true
+  when: icinga2_web_grafana.enabled

@@ -1,0 +1,301 @@
+---
+
+# The icingaweb2 web ui password
+icinga2_web_admin_pass: passw0rd
+
+# icinga2 API host
+icinga2_web_api_host: 127.0.0.1
+
+# icinga2 API port
+icinga2_web_api_port: 5665
+
+# icinga2 API user
+icinga2_web_api_user: icingaweb2
+
+# icinga2 API password
+icinga2_web_api_pass: passw0rd
+
+# icinga2 director API host
+icinga2_web_director_api_host: 127.0.0.1
+
+# icinga2 director API port
+icinga2_web_director_api_port: 5665
+
+# icinga2 director API user
+icinga2_web_director_api_user: director
+
+# icinga2 director API password
+icinga2_web_director_api_pass: passw0rd
+
+# icingadb instead of ido
+icinga2_web_use_icingadb: false
+
+## icingaweb2 database settings
+# The icingaweb2 database name
+icinga2_web_icingaweb2_database_name: icingaweb2
+
+# The icingaweb2 database user
+icinga2_web_icingaweb2_database_user: icingaweb2
+
+# The icingaweb2 database password
+icinga2_web_icingaweb2_database_pass: passw0rd
+
+# The icingaweb2 database host
+icinga2_web_icingaweb2_database_host: 127.0.0.1
+
+# The icingaweb2 database port
+icinga2_web_icingaweb2_database_port: 3306
+
+# the hostpattern which can access and login with the icingaweb2 user
+icinga2_web_icingaweb2_database_hostpattern: localhost
+
+# icingaweb2 database ssl connection (1 or 0)
+icinga2_web_icingaweb2_database_ssl: 0
+
+# icingaweb2 database ssl ca path
+icinga2_web_icingaweb2_database_ssl_ca: /etc/pki/tls/certs/ca-bundle.crt
+
+# A root user on the db host with permissions to
+# add the user specified above (icinga2_web_icingaweb2_database_user)
+icinga2_web_database_user: icingaweb2
+
+# corresponding password to the root user
+icinga2_web_database_root_pass: passw0rd
+
+## Icinga2 database settings
+# icinga2 database name
+icinga2_web_icinga2_database_name: icinga2
+#
+# icinga2 database host
+icinga2_web_icinga2_database_host: 127.0.0.1
+
+# icinga2 database port
+icinga2_web_icinga2_database_port: 3306
+
+# icinga2 database user
+icinga2_web_icinga2_database_user: icinga2
+
+# icinga2 database password
+icinga2_web_icinga2_database_pass: passw0rd
+
+# icinga2 database ssl connection (1 or 0)
+icinga2_web_icinga2_database_ssl: 0
+
+# icinga2 database ssl ca path
+icinga2_web_icinga2_database_ssl_ca: /etc/pki/tls/certs/ca-bundle.crt
+
+# icingaweb2 managed config files
+icinga2_web_managed_config_files:
+  - config.ini
+  - resources.ini
+  - roles.ini
+  - authentication.ini
+  - groups.ini
+
+icinga2_web_modules: []
+#  - name: graphite
+#    url: 'https://github.com/icinga/icingaweb2-module-graphite.git'
+#    version: master
+#  - name: ipl
+#    url: 'https://github.com/icinga/icingaweb2-module-ipl.git'
+#    version: v0.5.0
+#  - name: incubator
+#    url: 'https://github.com/icinga/icingaweb2-module-incubator.git'
+#    version: v0.5.0
+#  - name: reactbundle
+#    url: 'https://github.com/icinga/icingaweb2-module-reactbundle.git'
+#    version: v0.7.0
+#  - name: director
+#    url: 'https://github.com/icinga/icingaweb2-module-director.git'
+#    version: v1.7.2
+#  - name: audit
+#    url: 'https://github.com/adfinis/icingaweb2-module-audit.git'
+#    version: master
+
+# Icingaweb2 LDAP authentication
+# For further information, consult the official icingaweb2 documentation at
+# https://icinga.com/docs/icingaweb2/latest/doc/04-Resources/#ldap
+#
+# icinga2_web_ldap:
+#   - name: res_ldap_example_com
+#     host: ldap.example.com
+#     port: 636
+#     encryption: ldaps
+#     root_dn: 'cn=accounts,dc=ldap,dc=example,dc=com'
+#     bind_dn: 'uid=icingaweb2.auth,cn=systems,dc=ldap,dc=example,dc=com'
+#     bind_pw: 'ldap password'
+#     timeout: 5
+
+icinga2_web_ldap: []
+# Icingaweb2 LDAP User configuration
+# For further information, consult the official icingaweb2 documentation at
+# https://icinga.com/docs/icingaweb2/latest/doc/05-Authentication/#ldap
+#
+# icinga2_web_ldap_userconf:
+#   - name: user_ldap_example_com # required
+#     resource: 'res_ldap_example_com' # required
+#     user_class: 'inetOrgPerson' # required
+#     user_name_attribute: 'uid' # required
+#     base_dn: 'cn=accounts,dc=ldap,dc=example,dc=com' # optional
+#     filter: "(somefilter)" # optional
+
+icinga2_web_ldap_userconf: []
+# Icingaweb2 LDAP Group configuration
+# For further information, consult the official icingaweb2 documentation at
+# https://icinga.com/docs/icingaweb2/latest/doc/05-Authentication/#ldap-groups
+#
+# icinga2_web_ldap_groupconf:
+#   - name: group_ldap_example_com # required
+#     resource: 'res_ldap_example_com' # required
+#     user_backend: 'user_ldap_examle_com' # required
+#     user_class: 'user' # optional
+#     user_name_attribute: 'uid' # optional
+#     group_class: 'group' # optional
+#     group_name_attribute: 'gid' # optional
+#     group_member_attribute: 'memberUid' # optional
+#     group_filter: '(somefilter)' # optional
+
+icinga2_web_ldap_groupconf: []
+# Icingaweb2 database group configuration
+# For further information, consult the official icingaweb2 documentation at
+# https://icinga.com/docs/icinga-web-2/latest/doc/05-Authentication/#database-groups
+#
+# icinga2_web_database_groupconf:
+#   - name: icingaweb2
+#     backend: db
+#     resource: icingaweb_db
+
+icinga2_web_database_groupconf: []
+# Icinga2 Permissions configuration
+# For further information, consult the official icingaweb2 documentation at
+# https://icinga.com/docs/icingaweb2/latest/doc/06-Security/#configuration
+#
+# icinga2_web_permissions:
+#   - name: Administrators
+#     users:
+#       - admin
+#     groups:
+#       - Administrators
+#     permissions:
+#       '*'
+#     object_filter: ""
+#   - name: customer
+#     users:
+#       - customer1
+#     permissions:
+#       'monitoring/command/*,module/*'
+#     object_filter: 'host_name=*.customer.example.com"'
+
+icinga2_web_permissions:
+  - name: Administrators
+    users:
+      - admin
+    groups:
+      - Administrators
+    permissions:
+      - "*"
+
+# Director Resources configuration
+# For further information, consult the official icingaweb2 documentation at
+# https://icinga.com/docs/director/latest/doc/03-Automation/
+
+# icinga2_web_director:
+#   - name: 'director_db'
+#     db: 'mysql'
+#     host: 'db.example.com'
+#     port: '3306'
+#     dbname: 'director'
+#     username: 'director@example.com'
+#     password: '3xample'
+#     charset: 'utf-8'
+#     use_ssl: '1'
+#     ssl_ca: '/etc/pki/tls/certs/ca-bundle.crt'
+
+icinga2_web_director: []
+# Reporting resources configuration
+
+# icinga2_web_reporting:
+#   - name: 'reporting_db'
+#     db: 'mysql'
+#     host: 'db.example.com'
+#     port: '3306'
+#     dbname: 'reporting'
+#     username: 'reporting@example.com'
+#     password: '3xample'
+#     charset: 'utf8mb4'
+#     use_ssl: '1'
+#     ssl_ca: '/etc/pki/tls/certs/ca-bundle.crt'
+
+icinga2_web_reporting: []
+# IcingaDB resources configuration
+
+# icinga2_web_icingadb:
+#   - name: 'icingadb_db'
+#     db: 'mysql'
+#     host: 'db.example.com'
+#     port: '3306'
+#     dbname: 'icingadb'
+#     username: 'icingadb@example.com'
+#     password: '3xample'
+#     charset: 'utf8mb4'
+#     use_ssl: '1'
+#     ssl_ca: '/etc/pki/tls/certs/ca-bundle.crt'
+
+icinga2_web_icingadb: []
+
+# IcingaDB settings
+
+# icinga2_web_icingadb_settings:
+#    hostdowntime_all_services: true
+icinga2_web_icingadb_settings: {}
+
+# Navigation
+icinga2_web_navigation: {}
+#  Dashboard:
+#    type: "menu-item"
+#    parent: ""
+#    target: "_main"
+#    icon: "cloud"
+#    owner: "admin"
+#    groups: ["default"]
+#    users: ["user"]
+#    url: "/icingadb/tactical?filter"
+
+
+# Grafana configuration
+# icinga2_web_grafana:
+#   enabled: false
+#   domain: example.com
+#   oidc:
+#     enabled: true
+#     config:
+#       name: Example SSO
+#       allow_sign_up: true
+#       client_id: example-client
+#       client_secret: example-secret
+#       scopes: openid,email,profile
+#       email_attribute_name: email
+#       email_attribute_path: email
+#       auth_url: https://sso.example.com/auth/realms/example/protocol/openid-connect/auth
+#       token_url: https://sso.example.com/auth/realms/example/protocol/openid-connect/token
+#       api_url: https://sso.example.com/auth/realms/example/protocol/openid-connect/userinfo
+#       role_attribute_path: contains(groups[*], '/admin') && 'Admin'
+
+icinga2_web_grafana_datasources: []
+# Grafana datasources
+# icinga2_web_grafana_datasources:
+#   # <string, required> Sets the name you use to refer to
+#   # the data source in panels and queries.
+#   - name: Graphite
+#     type: graphite
+#     access: proxy
+#     orgId: 1
+#     url: http://localhost:8080
+
+icinga2_web_grafana_dashboards: []
+# Grafana dashboard JSON URLs, will be downloaded
+# icinga2_web_grafana_dashboards:
+#   - https://grafana.com/api/dashboards/56/revisions/3/download
+
+icinga2_web_graphite_url: ''
+icinga2_web_graphite_insecure: 0
