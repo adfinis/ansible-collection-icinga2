@@ -8,21 +8,21 @@ name: "icinga2"
 version: 1.0.0
 readme: README.md
 authors:
-  - your name <example@domain.com>
+  - Adfinis <https://adfinis.com>
 
-description: your collection description
+description: Install and configure Icinga 2 (agent, client, master) and Icinga Web 2
 license_file: LICENSE
 
-# TO-DO: update the tags based on your content type
-tags: ["linux", "tools"]
-# TO-DO: maintain this list to reflect the collection's dependencies
+tags: ["icinga2", "monitoring", "icingaweb2", "linux"]
 dependencies:
-  "ansible.utils": "*" # note: "*" selects the latest version available
+  "ansible.posix": ">=1.0.0"
+  "community.general": ">=1.0.0"
+  "community.mysql": ">=1.0.0"
 
-repository: http://example.com/repository
-documentation: http://docs.example.com
-homepage: http://example.com
-issues: http://example.com/issue/tracker
+repository: https://github.com/adfinis/ansible-collection-icinga2
+documentation: https://github.com/adfinis/ansible-collection-icinga2/blob/main/README.md
+homepage: https://github.com/adfinis/ansible-collection-icinga2
+issues: https://github.com/adfinis/ansible-collection-icinga2/issues
 
 # A list of file glob-like patterns used to filter any files or directories that should not be included in the build
 # artifact. A pattern is matched from the relative path of the file or directory of the collection directory. This

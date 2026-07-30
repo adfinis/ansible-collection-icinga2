@@ -1,6 +1,9 @@
 # Adfinis Icinga2 Collection
 
-This repository contains the `adfinis.icinga2` Ansible Collection.
+This repository contains the `adfinis.icinga2` Ansible Collection. It
+consolidates the former standalone roles `adfinis.icinga2_agent`,
+`adfinis.icinga2_client`, `adfinis.icinga2_master` and `adfinis.icinga2_web`
+into a single collection.
 
 <!--start requires_ansible-->
 <!--end requires_ansible-->
@@ -15,6 +18,33 @@ which requirements are needed.
 
 <!--start collection content-->
 <!--end collection content-->
+
+### Roles
+
+| Role | Description |
+| ---- | ----------- |
+| [`adfinis.icinga2.icinga2_agent`](roles/icinga2_agent/README.md) | Install the Icinga 2 package and repositories |
+| [`adfinis.icinga2.icinga2_client`](roles/icinga2_client/README.md) | Configure an Icinga 2 satellite/client (zones, certificates, API) |
+| [`adfinis.icinga2.icinga2_master`](roles/icinga2_master/README.md) | Configure an Icinga 2 master (zones, IcingaDB, notifications) |
+| [`adfinis.icinga2.icinga2_web`](roles/icinga2_web/README.md) | Install and configure Icinga Web 2 (modules, LDAP, Grafana) |
+
+The `icinga2_client`, `icinga2_master` and `icinga2_web` roles automatically
+pull in `icinga2_agent` through their role dependencies. Variables keep their
+role-name prefix (`icinga2_agent_*`, `icinga2_client_*`, `icinga2_master_*`,
+`icinga2_web_*`); see each role's README for details.
+
+Example playbook:
+
+```yaml
+- hosts: monitoring_masters
+  roles:
+    - adfinis.icinga2.icinga2_master
+    - adfinis.icinga2.icinga2_web
+
+- hosts: monitored_servers
+  roles:
+    - adfinis.icinga2.icinga2_client
+```
 
 ## Using this collection
 
@@ -53,7 +83,7 @@ for more details.
 ## Release notes
 
 See the
-[changelog](https://github.com/ansible-collections/adfinis.icinga2/tree/main/CHANGELOG.rst).
+[changelog](https://github.com/adfinis/ansible-collection-icinga2/blob/main/CHANGELOG.rst).
 
 ## Roadmap
 

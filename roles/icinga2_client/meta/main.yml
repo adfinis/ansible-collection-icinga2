@@ -1,7 +1,7 @@
 ---
 
 dependencies:
-  - role: adfinis.icinga2_agent
+  - role: adfinis.icinga2.icinga2_agent
 galaxy_info:
   role_name: icinga2_client
   namespace: adfinis
