@@ -1,5 +1,4 @@
 ---
-
 # The icinga2 parent hosts. Only 2 allowed.
 # https://github.com/Icinga/icinga2/issues/3533
 icinga2_client_monitoring_parents:

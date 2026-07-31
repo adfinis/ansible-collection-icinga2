@@ -1,0 +1,36 @@
+---
+# The icinga2_master and icinga2_web roles always pass --ssl-ca pointing at
+# the system wide ca bundle when talking to the database. Fetch the
+# certificate that mariadb generates on startup and add it to the system ca
+# store so the TLS connections can be verified.
+#
+# Expects `molecule_mariadb_host`, the hostname of the mariadb container.
+- name: Install openssl and ca-certificates
+  ansible.builtin.apt:
+    name:
+      - openssl
+      - ca-certificates
+    state: present
+    update_cache: true
+
+- name: Wait for mariadb to accept connections
+  ansible.builtin.wait_for:
+    host: "{{ molecule_mariadb_host }}"
+    port: 3306
+    timeout: 120
+
+- name: Fetch the mariadb certificate
+  ansible.builtin.shell: >
+    set -o pipefail;
+    openssl s_client
+    -connect {{ molecule_mariadb_host }}:3306
+    -starttls mysql
+    </dev/null 2>/dev/null
+    | openssl x509 -out /usr/local/share/ca-certificates/molecule-mariadb.crt
+  args:
+    executable: /bin/bash
+    creates: /usr/local/share/ca-certificates/molecule-mariadb.crt
+
+- name: Update the system ca store
+  ansible.builtin.command: update-ca-certificates
+  changed_when: false

@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: instance
+  become: true
+  vars:
+    icinga2_master_ido_enabled: true
+    icinga2_master_ticket_salt: molecule-ticket-salt
+    icinga2_master_icinga2_database_host: icinga2-master-db
+    # Normally set for the icinga2_client role, but the master role
+    # references it as well.
+    icinga2_client_monitoring_parents:
+      - icinga2-master
+  roles:
+    - adfinis.icinga2.icinga2_master

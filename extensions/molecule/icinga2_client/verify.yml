@@ -1,0 +1,47 @@
+---
+- name: Verify
+  hosts: clients
+  gather_facts: false
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert that icinga2 is running and enabled
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['icinga2.service'].state == 'running'
+          - ansible_facts.services['icinga2.service'].status == 'enabled'
+
+    - name: Check for the client certificate
+      ansible.builtin.stat:
+        path: /var/lib/icinga2/certs/{{ inventory_hostname }}.crt
+      register: molecule_register_client_cert_stat
+
+    - name: Assert that the client certificate exists
+      ansible.builtin.assert:
+        that: molecule_register_client_cert_stat.stat.exists
+
+    - name: Assert that the api feature is enabled and the notification feature is disabled
+      ansible.builtin.stat:
+        path: /etc/icinga2/features-enabled/{{ item.name }}.conf
+      register: molecule_register_feature_stat
+      failed_when: molecule_register_feature_stat.stat.exists != item.enabled
+      loop:
+        - name: api
+          enabled: true
+        - name: notification
+          enabled: false
+
+    - name: Validate the icinga2 configuration
+      ansible.builtin.command: icinga2 daemon -C
+      changed_when: false
+
+    - name: List the certificate requests on the parent
+      ansible.builtin.command: icinga2 ca list --all
+      delegate_to: icinga2-parent
+      register: molecule_register_ca_list
+      changed_when: false
+
+    - name: Assert that the client certificate request was signed on the parent
+      ansible.builtin.assert:
+        that: inventory_hostname in molecule_register_ca_list.stdout

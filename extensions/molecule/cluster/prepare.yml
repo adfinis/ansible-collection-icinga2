@@ -1,0 +1,28 @@
+---
+- name: Prepare
+  hosts: instance
+  gather_facts: false
+  tasks:
+    - name: Bootstrap the container
+      ansible.builtin.include_tasks:
+        file: ../utils/tasks/bootstrap.yml
+
+- name: Prepare the database
+  hosts: localhost
+  gather_facts: false
+  vars:
+    molecule_mariadb_container: icinga2-cluster-db
+  tasks:
+    - name: Set up tls for mariadb
+      ansible.builtin.include_tasks:
+        file: ../utils/tasks/mariadb_tls.yml
+
+- name: Prepare the database connection
+  hosts: monitoring_master
+  become: true
+  vars:
+    molecule_mariadb_host: icinga2-cluster-db
+  tasks:
+    - name: Trust the mariadb certificate
+      ansible.builtin.include_tasks:
+        file: ../utils/tasks/trust_mariadb.yml

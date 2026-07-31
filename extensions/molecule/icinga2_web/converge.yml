@@ -1,0 +1,14 @@
+---
+- name: Converge
+  hosts: instance
+  become: true
+  vars:
+    icinga2_web_icingaweb2_database_host: icinga2-web-db
+    # The role expects this variable with a vault_ prefix, the defaults only
+    # define icinga2_web_icingaweb2_database_pass.
+    vault_icinga2_web_icingaweb2_database_pass: passw0rd
+    # No default exists for icinga2_web_grafana.
+    icinga2_web_grafana:
+      enabled: false
+  roles:
+    - adfinis.icinga2.icinga2_web

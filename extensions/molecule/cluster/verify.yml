@@ -1,0 +1,55 @@
+---
+- name: Verify the cluster nodes
+  hosts: instance
+  gather_facts: false
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert that icinga2 is running and enabled
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['icinga2.service'].state == 'running'
+          - ansible_facts.services['icinga2.service'].status == 'enabled'
+
+    - name: Validate the icinga2 configuration
+      ansible.builtin.command: icinga2 daemon -C
+      changed_when: false
+
+- name: Verify the agent ticket enrollment
+  hosts: monitoring_client
+  gather_facts: false
+  tasks:
+    # The signed certificate replaces the local self-signed one as soon as
+    # the ticket request passed satellite and master, so retry for a while.
+    - name: Check that the agent certificate was signed by the icinga2 CA
+      ansible.builtin.command:
+        argv:
+          - openssl
+          - x509
+          - -in
+          - /var/lib/icinga2/certs/{{ inventory_hostname }}.crt
+          - -noout
+          - -issuer
+      register: molecule_register_cert_issuer
+      until: "'Icinga CA' in molecule_register_cert_issuer.stdout"
+      retries: 24
+      delay: 5
+      changed_when: false
+
+- name: Verify the config sync on the satellite
+  hosts: monitoring_sat
+  gather_facts: false
+  tasks:
+    - name: Check that the agent zone was synced from the master
+      ansible.builtin.command:
+        argv:
+          - grep
+          - -r
+          - icinga2-cluster-agent
+          - /var/lib/icinga2/api/zones/
+      register: molecule_register_zone_sync
+      until: molecule_register_zone_sync.rc == 0
+      retries: 24
+      delay: 5
+      changed_when: false

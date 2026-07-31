@@ -1,0 +1,40 @@
+---
+- name: Verify
+  hosts: instance
+  gather_facts: false
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert that icinga2 is running and enabled
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['icinga2.service'].state == 'running'
+          - ansible_facts.services['icinga2.service'].status == 'enabled'
+
+    - name: Check for the enabled features
+      ansible.builtin.stat:
+        path: /etc/icinga2/features-enabled/{{ item }}.conf
+      register: molecule_register_feature_stat
+      failed_when: not molecule_register_feature_stat.stat.exists
+      loop:
+        - api
+        - ido-mysql
+
+    - name: Check that the ido database schema was imported
+      ansible.builtin.shell: >
+        set -o pipefail;
+        mysql
+        --user=icinga2
+        --password=passw0rd
+        --host=icinga2-master-db
+        --ssl-ca=/etc/ssl/certs/ca-certificates.crt
+        icinga2
+        -e "SHOW TABLES;" | grep "icinga_hosts"
+      args:
+        executable: /bin/bash
+      changed_when: false
+
+    - name: Validate the icinga2 configuration
+      ansible.builtin.command: icinga2 daemon -C
+      changed_when: false

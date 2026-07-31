@@ -1,5 +1,4 @@
 ---
-
 icinga2_master_owner: nagios
 icinga2_master_group: nagios
 

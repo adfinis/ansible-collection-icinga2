@@ -1,5 +1,4 @@
 ---
-
 # The yum repository and key from Icinga
 icinga2_agent_yum:
   repo: http://packages.icinga.com/epel/$releasever/release/

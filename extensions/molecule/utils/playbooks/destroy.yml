@@ -1,0 +1,23 @@
+---
+- name: Destroy
+  hosts: localhost
+  gather_facts: false
+  vars:
+    molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
+  tasks:
+    - name: Remove the molecule instance(s)
+      containers.podman.podman_container:
+        name: "{{ item.name }}"
+        state: absent
+      loop: "{{ molecule_yml.platforms }}"
+
+    - name: Remove the molecule network
+      containers.podman.podman_network:
+        name: molecule-{{ molecule_scenario_name }}
+        state: absent
+
+    - name: Remove the molecule volume(s)
+      containers.podman.podman_volume:
+        name: "{{ item.split(':') | first }}"
+        state: absent
+      loop: "{{ molecule_yml.platforms | map(attribute='volumes', default=[]) | flatten | reject('match', '/') | list }}"

@@ -1,0 +1,34 @@
+---
+- name: Verify
+  hosts: instance
+  gather_facts: false
+  tasks:
+    - name: Check for the icingaweb2 configuration files
+      ansible.builtin.stat:
+        path: /etc/icingaweb2/{{ item }}
+      register: molecule_register_config_stat
+      failed_when: not molecule_register_config_stat.stat.exists
+      loop:
+        - config.ini
+        - resources.ini
+        - roles.ini
+        - authentication.ini
+        - groups.ini
+
+    - name: List the icingaweb2 modules
+      ansible.builtin.command: icingacli module list
+      changed_when: false
+
+    - name: Check that the icingaweb2 admin user was created
+      ansible.builtin.shell: >
+        set -o pipefail;
+        mysql
+        --user=icingaweb2
+        --password=passw0rd
+        --host=icinga2-web-db
+        --ssl-ca=/etc/ssl/certs/ca-certificates.crt
+        icingaweb2
+        -e "SELECT name FROM icingaweb_user;" | grep "admin"
+      args:
+        executable: /bin/bash
+      changed_when: false

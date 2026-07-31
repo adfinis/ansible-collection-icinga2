@@ -1,0 +1,24 @@
+---
+- name: Create
+  hosts: localhost
+  gather_facts: false
+  vars:
+    molecule_scenario_name: "{{ lookup('env', 'MOLECULE_SCENARIO_NAME') }}"
+  tasks:
+    - name: Create the molecule network
+      containers.podman.podman_network:
+        name: molecule-{{ molecule_scenario_name }}
+        state: present
+
+    - name: Create the molecule instance(s)
+      containers.podman.podman_container:
+        name: "{{ item.name }}"
+        image: "{{ item.image }}"
+        hostname: "{{ item.name }}"
+        command: "{{ item.command | default('/lib/systemd/systemd' if item.systemd | default(true) else omit) }}"
+        env: "{{ item.env | default(omit) }}"
+        volumes: "{{ item.volumes | default(omit) }}"
+        network: molecule-{{ molecule_scenario_name }}
+        systemd: "{{ 'always' if item.systemd | default(true) else false }}"
+        state: started
+      loop: "{{ molecule_yml.platforms }}"

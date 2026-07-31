@@ -1,5 +1,4 @@
 ---
-
 # mysql.schema.sql path for debian
 icinga2_web_mysql_schema_sql_path: /usr/share/icingaweb2/schema/mysql.schema.sql
 

@@ -1,0 +1,143 @@
+---
+# The first master has to converge alone initially, so it creates the
+# icinga2 CA before the second master and the satellite enroll against it.
+- name: Converge the first master
+  hosts: icinga2-cluster-master1
+  become: true
+  roles:
+    - adfinis.icinga2.icinga2_master
+
+# The master role sets up an independent CA on every master,
+# so enroll the second master into the CA of the first master before the
+# role runs on it.
+- name: Enroll the second master into the shared CA
+  hosts: icinga2-cluster-master2
+  become: true
+  roles:
+    # Installs icinga2, which provides the pki commands used below.
+    - adfinis.icinga2.icinga2_agent
+  tasks:
+    - name: Read the ca from the first master
+      ansible.builtin.slurp:
+        src: /var/lib/icinga2/ca/{{ item }}
+      delegate_to: icinga2-cluster-master1
+      register: molecule_register_ca_files
+      loop:
+        - ca.crt
+        - ca.key
+
+    - name: Create the ca directory
+      ansible.builtin.file:
+        path: /var/lib/icinga2/ca
+        state: directory
+        owner: nagios
+        group: nagios
+        mode: "0700"
+
+    - name: Copy the ca to the second master
+      ansible.builtin.copy:
+        content: "{{ item.content | b64decode }}"
+        dest: /var/lib/icinga2/ca/{{ item.item }}
+        owner: nagios
+        group: nagios
+        mode: "0600"
+      loop: "{{ molecule_register_ca_files.results }}"
+      loop_control:
+        label: "{{ item.item }}"
+
+    - name: Create the certs directory
+      ansible.builtin.file:
+        path: /var/lib/icinga2/certs
+        state: directory
+        owner: nagios
+        group: nagios
+        mode: "0700"
+
+    - name: Create a certificate request for the second master
+      ansible.builtin.command:
+        argv:
+          - icinga2
+          - pki
+          - new-cert
+          - --cn
+          - "{{ inventory_hostname }}"
+          - --key
+          - /var/lib/icinga2/certs/{{ inventory_hostname }}.key
+          - --csr
+          - /var/lib/icinga2/certs/{{ inventory_hostname }}.csr
+        creates: /var/lib/icinga2/certs/{{ inventory_hostname }}.csr
+
+    - name: Sign the certificate of the second master
+      ansible.builtin.command:
+        argv:
+          - icinga2
+          - pki
+          - sign-csr
+          - --csr
+          - /var/lib/icinga2/certs/{{ inventory_hostname }}.csr
+          - --cert
+          - /var/lib/icinga2/certs/{{ inventory_hostname }}.crt
+        creates: /var/lib/icinga2/certs/{{ inventory_hostname }}.crt
+
+    - name: Install the ca certificate
+      ansible.builtin.copy:
+        src: /var/lib/icinga2/ca/ca.crt
+        remote_src: true
+        dest: /var/lib/icinga2/certs/ca.crt
+        owner: nagios
+        group: nagios
+        mode: "0644"
+
+    - name: Set the ownership of the certificates
+      ansible.builtin.file:
+        path: /var/lib/icinga2/certs/{{ item }}
+        owner: nagios
+        group: nagios
+        mode: "0600"
+      loop:
+        - "{{ inventory_hostname }}.key"
+        - "{{ inventory_hostname }}.crt"
+
+- name: Converge the masters
+  hosts: monitoring_master
+  become: true
+  roles:
+    - adfinis.icinga2.icinga2_master
+
+- name: Converge the satellite
+  hosts: monitoring_sat
+  become: true
+  pre_tasks:
+    - name: Wait for the first master to accept connections
+      ansible.builtin.wait_for:
+        host: icinga2-cluster-master1
+        port: 5665
+        timeout: 120
+  roles:
+    - adfinis.icinga2.icinga2_client
+
+- name: Converge the agent with ticket enrollment
+  hosts: monitoring_client
+  become: true
+  vars:
+    icinga2_client_monitoring_parents:
+      - icinga2-cluster-satellite
+    icinga2_client_parent_zone: icinga2-cluster-satellite
+    icinga2_client_signing_method: ticket
+    icinga2_client_ticket_api_url: https://icinga2-cluster-master1:5665
+    icinga2_client_ticket_api_user: ticket-service
+    icinga2_client_ticket_api_password: passw0rd
+    icinga2_client_ticket_api_delegate: "{{ inventory_hostname }}"
+    # The api certificate is signed by the icinga2 CA, which is not in the
+    # system ca store.
+    icinga2_client_ticket_api_validate_certs: false
+    # Do not hide the enrollment tasks in the test logs.
+    icinga2_client_no_log: false
+  pre_tasks:
+    - name: Wait for the satellite to accept connections
+      ansible.builtin.wait_for:
+        host: icinga2-cluster-satellite
+        port: 5665
+        timeout: 120
+  roles:
+    - adfinis.icinga2.icinga2_client

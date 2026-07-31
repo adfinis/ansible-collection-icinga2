@@ -1,0 +1,91 @@
+---
+driver:
+  name: default
+
+platforms:
+  - name: icinga2-cluster-master1
+    image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
+    groups:
+      - instance
+      - monitoring_master
+
+  - name: icinga2-cluster-master2
+    image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
+    groups:
+      - instance
+      - monitoring_master
+
+  - name: icinga2-cluster-satellite
+    image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
+    groups:
+      - instance
+      - monitoring_sat
+
+  - name: icinga2-cluster-agent
+    image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
+    groups:
+      - instance
+      - monitoring_client
+
+  - name: icinga2-cluster-db
+    image: docker.io/library/mariadb:11.8
+    systemd: false
+    volumes:
+      - icinga2-cluster-db-tls:/etc/mysql/tls
+      - icinga2-cluster-db-conf:/etc/mysql/conf.d
+    env:
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+      MARIADB_DATABASE: icinga2
+      MARIADB_USER: icinga2
+      MARIADB_PASSWORD: passw0rd
+    groups:
+      - db
+
+provisioner:
+  name: ansible
+  playbooks:
+    create: ../utils/playbooks/create.yml
+    destroy: ../utils/playbooks/destroy.yml
+  inventory:
+    group_vars:
+      all:
+        ansible_connection: containers.podman.podman
+        # Used by the master role to define the master zone endpoints. The
+        # satellite uses the same masters as parents; the agent play
+        # overrides this with the satellite.
+        icinga2_client_monitoring_parents:
+          - icinga2-cluster-master1
+          - icinga2-cluster-master2
+      monitoring_master:
+        icinga2_master_client_parent_zone: monitoring-master
+        icinga2_master_ticket_salt: molecule-ticket-salt
+        icinga2_master_ido_enabled: true
+        icinga2_master_icinga2_database_host: icinga2-cluster-db
+        # The default users import the generic-user template, which only the
+        # first master has until the config sync runs, so the second master
+        # could never validate its configuration.
+        icinga2_master_users: []
+        icinga2_master_usergroups: []
+        # ApiUser used for the ticket enrollment of the agent
+        icinga2_master_api_users:
+          - username: ticket-service
+            password: passw0rd
+            permissions:
+              - name: actions/generate-ticket
+    host_vars:
+      icinga2-cluster-agent:
+        # Used by the master role to place the zone and host config of the
+        # agent in the satellite zone directory.
+        icinga2_master_client_parent_zone: icinga2-cluster-satellite
+
+scenario:
+  # No idempotence step: the master role is not idempotent on the second run
+  # because "icinga2 api setup" rewrites the templated configuration files.
+  test_sequence:
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - verify
+    - destroy

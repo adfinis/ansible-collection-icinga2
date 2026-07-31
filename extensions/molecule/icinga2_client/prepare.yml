@@ -1,0 +1,27 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Bootstrap the container
+      ansible.builtin.include_tasks:
+        file: ../utils/tasks/bootstrap.yml
+
+# The client needs a running parent with the icinga2 CA to fetch and sign its
+# certificate. Install icinga2 through the agent role and set up the CA and
+# api listener like a master would.
+- name: Prepare the parent
+  hosts: masters
+  become: true
+  roles:
+    - adfinis.icinga2.icinga2_agent
+  tasks:
+    - name: Execute icinga2 api setup command
+      ansible.builtin.command: icinga2 api setup
+      args:
+        creates: /var/lib/icinga2/ca/ca.crt
+
+    - name: Restart icinga2
+      ansible.builtin.service:
+        name: icinga2
+        state: restarted

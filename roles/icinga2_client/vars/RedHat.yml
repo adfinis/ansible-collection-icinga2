@@ -1,5 +1,4 @@
 ---
-
 # The user which files belong to
 icinga2_client_file_owner: icinga
 

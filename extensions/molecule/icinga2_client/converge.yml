@@ -1,0 +1,12 @@
+---
+- name: Converge
+  hosts: clients
+  become: true
+  vars:
+    # The parent zone name has to match the ZoneName constant on the parent,
+    # which `icinga2 api setup` sets to the hostname.
+    icinga2_client_monitoring_parents:
+      - icinga2-parent
+    icinga2_client_parent_zone: icinga2-parent
+  roles:
+    - adfinis.icinga2.icinga2_client
