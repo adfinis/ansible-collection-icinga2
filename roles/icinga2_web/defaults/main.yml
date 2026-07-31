@@ -1,5 +1,4 @@
 ---
-
 # The icingaweb2 web ui password
 icinga2_web_admin_pass: passw0rd
 
@@ -261,7 +260,6 @@ icinga2_web_navigation: {}
 #    users: ["user"]
 #    url: "/icingadb/tactical?filter"
 
-
 # Grafana configuration
 # icinga2_web_grafana:
 #   enabled: false
@@ -297,5 +295,5 @@ icinga2_web_grafana_dashboards: []
 # icinga2_web_grafana_dashboards:
 #   - https://grafana.com/api/dashboards/56/revisions/3/download
 
-icinga2_web_graphite_url: ''
+icinga2_web_graphite_url: ""
 icinga2_web_graphite_insecure: 0

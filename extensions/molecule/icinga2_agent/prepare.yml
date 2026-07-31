@@ -1,0 +1,8 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Bootstrap the container
+      ansible.builtin.include_tasks:
+        file: ../utils/tasks/bootstrap.yml

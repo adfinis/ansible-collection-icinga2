@@ -21,22 +21,58 @@ jobs:
       contents: read
     uses: ansible/ansible-content-actions/.github/workflows/changelog.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
     if: github.event_name == 'pull_request'
+
   build-import:
     permissions:
       contents: read
     uses: ansible/ansible-content-actions/.github/workflows/build_import.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+
   ansible-lint:
     permissions:
       contents: read
     uses: ansible/ansible-content-actions/.github/workflows/ansible_lint.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+
   sanity:
     permissions:
       contents: read
     uses: ansible/ansible-content-actions/.github/workflows/sanity.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+
   unit-galaxy:
     permissions:
       contents: read
     uses: ansible/ansible-content-actions/.github/workflows/unit.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+
+  # The molecule scenarios are run directly instead of through the
+  # ansible-content-actions integration workflow, because the reusable
+  # workflow accepts no inputs and therefore cannot build a distro matrix.
+  integration:
+    name: molecule-${{ matrix.scenario }}-${{ matrix.distro }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        scenario:
+          - icinga2_agent
+          - icinga2_client
+          - icinga2_master
+          - icinga2_web
+        distro:
+          - debian12
+          - debian13
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+      - name: Install the dev environment
+        run: uv sync
+      - name: Run molecule
+        run: uv run --frozen molecule test -s ${{ matrix.scenario }}
+        env:
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+
   all_green:
     if: ${{ always() }}
     needs:
@@ -45,6 +81,7 @@ jobs:
       - sanity
       - unit-galaxy
       - ansible-lint
+      - integration
     runs-on: ubuntu-latest
     steps:
       - run: >-
@@ -53,5 +90,6 @@ jobs:
           '${{ needs.changelog.result }}',
           '${{ needs.sanity.result }}',
           '${{ needs.unit-galaxy.result }}',
-          '${{ needs.ansible-lint.result }}'
+          '${{ needs.ansible-lint.result }}',
+          '${{ needs.integration.result }}'
           ])"

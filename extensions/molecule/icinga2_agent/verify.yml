@@ -1,0 +1,17 @@
+---
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert that icinga2 is running and enabled
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.services['icinga2.service'].state == 'running'
+          - ansible_facts.services['icinga2.service'].status == 'enabled'
+
+    - name: Validate the icinga2 configuration
+      ansible.builtin.command: icinga2 daemon -C
+      changed_when: false

@@ -30,6 +30,7 @@ issues: https://github.com/adfinis/ansible-collection-icinga2/issues
 # and '.git' are always filtered. Mutually exclusive with 'manifest'
 build_ignore:
   - .gitignore
+  - .ansible
   - changelogs/.plugin-cache.yaml
 # A dict controlling use of manifest directives used in building the collection artifact. The key 'directives' is a
 # list of MANIFEST.in style

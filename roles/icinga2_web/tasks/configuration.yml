@@ -24,7 +24,7 @@
   ansible.builtin.file:
     path: /usr/share/icingaweb2/modules/graphite
     state: directory
-    mode: '0775'
+    mode: "0775"
 
 - name: Create a symbolic link for module graphite
   ansible.builtin.file:
@@ -254,7 +254,7 @@
     ('admin', 1, '{{ icinga2_web_register_admin_hash.stdout }}')"
   when:
     - not ansible_check_mode
-    - not icinga2_web_register_admin_hash.skipped
+    - icinga2_web_register_admin_hash is not skipped
     - icinga2_web_register_icingaweb2_imported.rc == 1
 
 - name: Ensure navigation directory is present
@@ -290,7 +290,7 @@
 - name: Make sure grafana dashboard folder exists
   ansible.builtin.file:
     path: /var/lib/grafana/dashboards
-    mode: '0770'
+    mode: "0770"
     state: directory
     owner: grafana
     group: grafana
@@ -298,12 +298,11 @@
     - icinga2_web_grafana.enabled
     - icinga2_web_grafana_dashboards | length != 0
 
-
 - name: Download grafana dashboards
   ansible.builtin.get_url:
     url: "{{ item }}"
     dest: "/var/lib/grafana/dashboards/{{ item | hash('sha256') }}.json"
-    mode: '0660'
+    mode: "0660"
     owner: grafana
     group: grafana
   loop: "{{ icinga2_web_grafana_dashboards }}"
@@ -315,7 +314,7 @@
   ansible.builtin.template:
     src: etc/grafana/provisioning/dashboards/dashboards.yaml.j2
     dest: /etc/grafana/provisioning/dashboards/dashboards.yaml
-    mode: '0660'
+    mode: "0660"
     owner: grafana
     group: grafana
   notify: Icinga2_web restart grafana-server
@@ -327,7 +326,7 @@
   ansible.builtin.template:
     src: etc/grafana/provisioning/datasources/datasources.yaml.j2
     dest: /etc/grafana/provisioning/datasources/datasources.yaml
-    mode: '0660'
+    mode: "0660"
     owner: grafana
     group: grafana
   notify: Icinga2_web restart grafana-server

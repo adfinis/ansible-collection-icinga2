@@ -1,0 +1,37 @@
+---
+# The certificate mariadb generates on startup only carries "CN = MariaDB
+# Server" without a SAN, which never passes hostname verification. Generate a
+# self-signed certificate carrying the container name in a helper container
+# and share it with the mariadb container through named volumes, so the
+# roles' TLS connections can be verified.
+#
+# Runs on localhost. Expects `molecule_mariadb_container`, the name of the
+# mariadb container, which has to mount the volumes
+# <container>-tls:/etc/mysql/tls and <container>-conf:/etc/mysql/conf.d.
+- name: Generate the mariadb certificate in a helper container
+  containers.podman.podman_container:
+    name: "{{ molecule_mariadb_container }}-tls-helper"
+    image: docker.io/library/mariadb:11.8
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - >-
+        test -f /etc/mysql/tls/server-cert.pem ||
+        (openssl req -x509 -newkey rsa:2048 -nodes -days 365
+        -subj "/CN={{ molecule_mariadb_container }}"
+        -addext "subjectAltName=DNS:{{ molecule_mariadb_container }}"
+        -keyout /etc/mysql/tls/server-key.pem
+        -out /etc/mysql/tls/server-cert.pem &&
+        chown -R mysql:mysql /etc/mysql/tls &&
+        printf '[mariadbd]\nssl_cert = /etc/mysql/tls/server-cert.pem\nssl_key = /etc/mysql/tls/server-key.pem\n'
+        > /etc/mysql/conf.d/50-molecule-tls.cnf)
+    volumes:
+      - "{{ molecule_mariadb_container }}-tls:/etc/mysql/tls"
+      - "{{ molecule_mariadb_container }}-conf:/etc/mysql/conf.d"
+    detach: false
+    rm: true
+    state: started
+
+- name: Restart the mariadb container to pick up the certificate
+  ansible.builtin.command: podman restart {{ molecule_mariadb_container }}
+  changed_when: true

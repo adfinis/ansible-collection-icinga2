@@ -1,0 +1,44 @@
+---
+driver:
+  name: default
+
+platforms:
+  - name: icinga2-web
+    image: "docker.io/geerlingguy/docker-${MOLECULE_DISTRO:-debian13}-ansible:latest"
+    groups:
+      - instance
+
+  - name: icinga2-web-db
+    image: docker.io/library/mariadb:11.8
+    systemd: false
+    volumes:
+      - icinga2-web-db-tls:/etc/mysql/tls
+      - icinga2-web-db-conf:/etc/mysql/conf.d
+    env:
+      MARIADB_RANDOM_ROOT_PASSWORD: "1"
+      MARIADB_DATABASE: icingaweb2
+      MARIADB_USER: icingaweb2
+      MARIADB_PASSWORD: passw0rd
+    groups:
+      - db
+
+provisioner:
+  name: ansible
+  playbooks:
+    create: ../utils/playbooks/create.yml
+    destroy: ../utils/playbooks/destroy.yml
+  inventory:
+    group_vars:
+      all:
+        ansible_connection: containers.podman.podman
+
+scenario:
+  test_sequence:
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - idempotence
+    - verify
+    - destroy

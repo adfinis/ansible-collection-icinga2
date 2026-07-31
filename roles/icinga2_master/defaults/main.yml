@@ -1,5 +1,4 @@
 ---
-
 # Increment this whenever you make breaking changes to the role
 icinga2_master_role_revision: "1"
 
@@ -236,7 +235,6 @@ icinga2_master_icinga2_retention_interval: 1h
 # icinga2_master_icinga2_retention_notification:
 # icinga2_master_icinga2_retention_state:
 
-
 ## Template settings
 
 # If you have own templates for the configuration files in /etc/icinga2/conf.d
@@ -259,7 +257,6 @@ icinga2_master_template_globaltemplates:
 # Global Zones to be added to zones.conf
 icinga2_master_global_zones:
   - global-templates
-
 
 # Plugin directory for nagios plugins
 icinga2_master_nagios_plugin_dir: /usr/lib/nagios/plugins

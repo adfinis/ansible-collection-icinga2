@@ -1,5 +1,4 @@
 ---
-
 dependencies:
   - role: adfinis.icinga2.icinga2_agent
 galaxy_info:

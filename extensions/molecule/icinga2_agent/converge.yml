@@ -1,0 +1,6 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  roles:
+    - adfinis.icinga2.icinga2_agent
