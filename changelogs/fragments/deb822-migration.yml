@@ -1,0 +1,19 @@
+---
+minor_changes:
+  - icinga2_agent - configure the Icinga apt repository with
+    ``deb822_repository`` on all Debian releases instead of only Debian >= 13.
+    The deprecated ``apt_key`` and ``apt_repository`` modules (scheduled for
+    removal in ansible-core 2.25) are no longer used; old repository entries
+    previously managed by ``apt_repository`` are cleaned up by removing the
+    generated sources.list.d file. ``gnupg2`` is no longer installed as a
+    dependency.
+  - icinga2_web - configure the grafana apt repository with
+    ``deb822_repository`` on all Debian releases instead of only Debian >= 12,
+    removing the deprecated ``apt_key`` and ``apt_repository`` tasks. The
+    repository entry previously managed by ``apt_repository`` is cleaned up,
+    and ``python3-debian`` is installed as a dependency when grafana is
+    enabled.
+breaking_changes:
+  - icinga2_agent - the unused ``icinga2_agent_apt`` and
+    ``stretch_backports_apt`` default variables were removed together with the
+    Debian stretch (and Univention stretch) weirdnesses.
