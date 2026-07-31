@@ -128,26 +128,24 @@
     - icinga2_web_grafana.enabled
     - ansible_distribution == 'RedHat'
 
-- name: Add grafana apt key for Debian < 12
-  ansible.builtin.apt_key:
-    id: 963FA27710458545
-    url: https://apt.grafana.com/gpg.key
-    state: present
+- name: Remove old grafana apt repository managed by apt_repository
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/apt_grafana_com.list
+    state: absent
   when:
     - icinga2_web_grafana.enabled
-    - ansible_distribution == 'Debian'
-    - ansible_distribution_major_version | int < 12
+    - ansible_os_family == 'Debian'
 
-- name: Add grafana repository for Debian < 12
-  ansible.builtin.apt_repository:
-    repo: deb https://apt.grafana.com stable main
+- name: Install dependencies for the grafana apt repository
+  ansible.builtin.apt:
+    name: python3-debian
     state: present
+    update_cache: true
   when:
     - icinga2_web_grafana.enabled
-    - ansible_distribution == 'Debian'
-    - ansible_distribution_major_version | int < 12
+    - ansible_os_family == 'Debian'
 
-- name: Configure icinga apt repository for Debian >= 12
+- name: Add grafana apt repository
   ansible.builtin.deb822_repository:
     name: grafana
     types: deb
@@ -159,11 +157,11 @@
   when:
     - icinga2_web_grafana.enabled
     - ansible_os_family == 'Debian'
-    - ansible_distribution_major_version | int >= 12
 
 - name: Install grafana
   ansible.builtin.apt:
     name: grafana
+    update_cache: true
   when:
     - icinga2_web_grafana.enabled
     - ansible_distribution == 'Debian'

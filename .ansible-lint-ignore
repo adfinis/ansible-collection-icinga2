@@ -1,5 +1,4 @@
 # Pre-existing violations inherited from the standalone roles.
-roles/icinga2_agent/defaults/main.yml var-naming[no-role-prefix]
 roles/icinga2_web/tasks/configuration.yml var-naming[no-role-prefix]
 # TODO: The roles still use the community.mysql FQCNs. We should switch to ansible.mysql.
 roles/icinga2_master/tasks/installation.yml fqcn[canonical]

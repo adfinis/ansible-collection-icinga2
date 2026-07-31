@@ -1,0 +1,4 @@
+---
+breaking_changes:
+  - all roles - drop support for Debian versions older than bookworm. The
+    supported (and CI-tested) Debian versions are now bookworm and trixie.

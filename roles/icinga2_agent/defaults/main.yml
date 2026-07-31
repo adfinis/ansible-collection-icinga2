@@ -5,13 +5,6 @@ icinga2_agent_yum:
   key: http://packages.icinga.com/icinga.key
 
 # The apt repository and key from Icinga
-icinga2_agent_apt:
-  repo: >-
-    deb [signed-by=/usr/share/keyrings/icinga-archive-keyring.gpg]
-    http://packages.icinga.com/{{ ansible_distribution | lower }}
-    icinga-{{ ansible_distribution_release }} main
-  key: http://packages.icinga.com/icinga.key
-
 icinga2_agent_apt_deb822:
   name: icinga2
   uris: http://packages.icinga.com/{{ ansible_distribution | lower }}
@@ -23,10 +16,6 @@ icinga2_agent_apt_deb822:
 # The suse repository and key from Icinga
 icinga2_agent_suse:
   repo: http://packages.icinga.com/SUSE/ICINGA-release.repo
-
-# The apt repository for stretch-backports
-stretch_backports_apt:
-  repo: deb http://deb.debian.org/debian stretch-backports main
 
 # Override agent packages
 icinga2_agent_packages_override: []

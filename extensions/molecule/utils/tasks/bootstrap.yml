@@ -7,5 +7,5 @@
   changed_when: true
 
 - name: Install packages required by the roles # noqa: command-instead-of-module
-  ansible.builtin.command: apt-get install --yes python3-apt lsb-release gnupg
+  ansible.builtin.command: apt-get install --yes python3-apt
   changed_when: true
