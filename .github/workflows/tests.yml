@@ -58,6 +58,7 @@ jobs:
           - icinga2_client
           - icinga2_master
           - icinga2_web
+          - cluster
         distro:
           - debian12
           - debian13

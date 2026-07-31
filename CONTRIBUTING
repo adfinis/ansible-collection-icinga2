@@ -17,11 +17,14 @@ Each role has a molecule scenario in `extensions/molecule/`. The scenarios run
 in rootless podman containers and use the molecule `default` driver, so no
 driver plugin is required:
 
-```console
+```bash
+
+# e.g.
 uv run molecule test -s icinga2_agent
 uv run molecule test -s icinga2_client
-uv run molecule test -s icinga2_master
-uv run molecule test -s icinga2_web
+
+# list all scenarios
+uv run molecule list
 ```
 
 The scenarios use Debian 13 by default ; set `MOLECULE_DISTRO=debian12` to run
