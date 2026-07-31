@@ -48,7 +48,7 @@
     verbosity: 2
 
 - name: Import icingaweb2 database schema
-  community.mysql.mysql_db:
+  ansible.mysql.mysql_db:
     name: "{{ icinga2_web_icingaweb2_database_name }}"
     login_host: "{{ icinga2_web_icingaweb2_database_host }}"
     login_port: "{{ icinga2_web_icingaweb2_database_port }}"
