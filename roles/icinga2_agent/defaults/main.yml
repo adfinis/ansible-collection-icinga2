@@ -8,14 +8,14 @@ icinga2_agent_yum:
 icinga2_agent_apt:
   repo: >-
     deb [signed-by=/usr/share/keyrings/icinga-archive-keyring.gpg]
-    http://packages.icinga.com/{{ ansible_distribution | lower }}
-    icinga-{{ ansible_distribution_release }} main
+    http://packages.icinga.com/{{ ansible_facts.distribution | lower }}
+    icinga-{{ ansible_facts.distribution_release }} main
   key: http://packages.icinga.com/icinga.key
 
 icinga2_agent_apt_deb822:
   name: icinga2
-  uris: http://packages.icinga.com/{{ ansible_distribution | lower }}
-  suites: icinga-{{ ansible_distribution_release }}
+  uris: http://packages.icinga.com/{{ ansible_facts.distribution | lower }}
+  suites: icinga-{{ ansible_facts.distribution_release }}
   components:
     - main
   signed_by: http://packages.icinga.com/icinga.key
