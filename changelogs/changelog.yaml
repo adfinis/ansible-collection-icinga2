@@ -1,5 +1,9 @@
-ancestor: null
+---
+ancestor:
 releases:
+  0.1.1:
+    changes: {}
+    release_date: "2026-08-03"
   0.1.0:
     changes:
       bugfixes:
@@ -8,16 +12,14 @@ releases:
           result of the password hash task has no ``skipped`` key when the task actually
           ran.
       minor_changes:
-        - all roles now use the ansible_facts directory instead of the deprecated, injected
-          variables.
+        - all roles now use the ansible_facts directory instead of the deprecated,
+          injected variables.
       release_summary:
         "Initial release of the ``adfinis.icinga2`` collection, consolidating
         the standalone roles ``adfinis.icinga2_agent``, ``adfinis.icinga2_client``,
         ``adfinis.icinga2_master`` and ``adfinis.icinga2_web`` with their full git
         histories. Role names and variables are unchanged; role dependencies now use
-        collection FQCNs (e.g. ``adfinis.icinga2.icinga2_agent``).
-
-        "
+        collection FQCNs (e.g. ``adfinis.icinga2.icinga2_agent``).\n"
     fragments:
       - ansible-facts.yml
       - icinga2_web-admin-password-when-condition.yml

@@ -4,6 +4,9 @@ Adfinis Icinga2 Collection Release Notes
 
 .. contents:: Topics
 
+v0.1.1
+======
+
 v0.1.0
 ======
 
