@@ -1,5 +1,5 @@
 ---
-name: Draft release
+name: draft-release
 
 on: # yamllint disable-line rule:truthy
   workflow_dispatch:
