@@ -3,8 +3,13 @@
   hosts: instance
   gather_facts: false
   tasks:
-    - name: Gather service facts
+    - name: Gather service facts until icinga2 is running
       ansible.builtin.service_facts:
+      register: molecule_register_services
+      until: >-
+        molecule_register_services.ansible_facts.services['icinga2.service'].state == 'running'
+      retries: 12
+      delay: 5
 
     - name: Assert that icinga2 is running and enabled
       ansible.builtin.assert:
