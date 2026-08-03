@@ -307,3 +307,7 @@ icinga2_master_twilio_phone_enabled: false
 # Example:
 # icinga2_master_twilio_shorturl_cmd: "curl -s -X POST https://urlshort.example.com/api/new -d url=${LONGURL} | jq -r .shorturl"
 icinga2_master_twilio_shorturl_cmd: ""
+
+# Comment string added to the header of templated files to mark them as
+# managed by Ansible. Defaults to the deprecated `ansible_managed` variable.
+icinga2_master_ansible_managed: "{{ ansible_managed | default('Ansible managed') }}"
