@@ -60,3 +60,7 @@ icinga2_client_director_managed: false
 # Specify whether the client should actively try to connect (false)
 # to its parent(s) or not (true)
 icinga2_client_passive: false
+
+# Comment string added to the header of templated files to mark them as
+# managed by Ansible. Defaults to the deprecated `ansible_managed` variable.
+icinga2_client_ansible_managed: "{{ ansible_managed | default('Ansible managed') }}"

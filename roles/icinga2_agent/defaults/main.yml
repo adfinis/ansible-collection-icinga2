@@ -46,3 +46,7 @@ icinga2_agent_yum_epel_baseurl: https://download.fedoraproject.org/pub/epel/$rel
 #    description: CentOS-7 - Base
 
 icinga2_agent_yum_extra_repos: []
+
+# Comment string added to the header of templated files to mark them as
+# managed by Ansible. Defaults to the deprecated `ansible_managed` variable.
+icinga2_agent_ansible_managed: "{{ ansible_managed | default('Ansible managed') }}"
