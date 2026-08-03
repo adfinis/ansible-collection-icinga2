@@ -17,7 +17,7 @@ tags: ["icinga2", "monitoring", "icingaweb2", "linux"]
 dependencies:
   "ansible.posix": ">=1.0.0"
   "community.general": ">=1.0.0"
-  "community.mysql": ">=1.0.0"
+  "ansible.mysql": ">=5.1.0"
 
 repository: https://github.com/adfinis/ansible-collection-icinga2
 documentation: https://github.com/adfinis/ansible-collection-icinga2/blob/main/README.md

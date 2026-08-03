@@ -45,7 +45,7 @@
   run_once: true
 
 - name: Import icingadb database schema
-  community.mysql.mysql_db:
+  ansible.mysql.mysql_db:
     name: "{{ icinga2_master_icingadb_database_name }}"
     login_host: "{{ icinga2_master_icingadb_database_host }}"
     login_port: "{{ icinga2_master_icingadb_database_port }}"
@@ -83,7 +83,7 @@
   run_once: true
 
 - name: Import icinga2 ido database schema
-  community.mysql.mysql_db:
+  ansible.mysql.mysql_db:
     name: "{{ icinga2_master_icinga2_database_name }}"
     login_host: "{{ icinga2_master_icinga2_database_host }}"
     login_port: "{{ icinga2_master_icinga2_database_port }}"

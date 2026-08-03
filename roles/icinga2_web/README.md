@@ -26,7 +26,7 @@ roles:
 collections:
   - ansible.posix
   - community.general
-  - community.mysql
+  - ansible.mysql
 ```
 
 For all dependencies to be correcty installed, you need to create a
