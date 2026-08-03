@@ -16,7 +16,7 @@
     name: httpd_can_network_connect_db
     state: true
     persistent: true
-  when: ansible_distribution == 'RedHat'
+  when: ansible_facts.distribution == 'RedHat'
 
 # Allow httpd to connect to the network
 - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
@@ -24,7 +24,7 @@
     name: httpd_can_network_connect
     state: true
     persistent: true
-  when: ansible_distribution == 'RedHat'
+  when: ansible_facts.distribution == 'RedHat'
 
 - name: Check if icingaweb2 table and user in mysql exist (this might fail but thats expected)
   ansible.builtin.shell: >
@@ -118,7 +118,7 @@
     sslcacert: /etc/pki/tls/certs/ca-bundle.crt
   when:
     - icinga2_web_grafana.enabled
-    - ansible_distribution == 'RedHat'
+    - ansible_facts.distribution == 'RedHat'
 
 - name: Install grafana
   ansible.builtin.dnf:
@@ -126,7 +126,7 @@
     state: present
   when:
     - icinga2_web_grafana.enabled
-    - ansible_distribution == 'RedHat'
+    - ansible_facts.distribution == 'RedHat'
 
 - name: Add grafana apt key for Debian < 12
   ansible.builtin.apt_key:
@@ -135,8 +135,8 @@
     state: present
   when:
     - icinga2_web_grafana.enabled
-    - ansible_distribution == 'Debian'
-    - ansible_distribution_major_version | int < 12
+    - ansible_facts.distribution == 'Debian'
+    - ansible_facts.distribution_major_version | int < 12
 
 - name: Add grafana repository for Debian < 12
   ansible.builtin.apt_repository:
@@ -144,8 +144,8 @@
     state: present
   when:
     - icinga2_web_grafana.enabled
-    - ansible_distribution == 'Debian'
-    - ansible_distribution_major_version | int < 12
+    - ansible_facts.distribution == 'Debian'
+    - ansible_facts.distribution_major_version | int < 12
 
 - name: Configure icinga apt repository for Debian >= 12
   ansible.builtin.deb822_repository:
@@ -158,15 +158,15 @@
     state: present
   when:
     - icinga2_web_grafana.enabled
-    - ansible_os_family == 'Debian'
-    - ansible_distribution_major_version | int >= 12
+    - ansible_facts.os_family == 'Debian'
+    - ansible_facts.distribution_major_version | int >= 12
 
 - name: Install grafana
   ansible.builtin.apt:
     name: grafana
   when:
     - icinga2_web_grafana.enabled
-    - ansible_distribution == 'Debian'
+    - ansible_facts.distribution == 'Debian'
 
 - name: Enable and start grafana service
   ansible.builtin.systemd_service:

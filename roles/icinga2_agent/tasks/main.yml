@@ -2,9 +2,9 @@
 - name: Include os specific vars
   ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
-    - "{{ ansible_distribution }}_{{ ansible_distribution_major_version }}.yml"
-    - "{{ ansible_distribution }}.yml"
-    - "{{ ansible_os_family }}.yml"
+    - "{{ ansible_facts.distribution }}_{{ ansible_facts.distribution_major_version }}.yml"
+    - "{{ ansible_facts.distribution }}.yml"
+    - "{{ ansible_facts.os_family }}.yml"
   tags:
     - role::icinga2_agent
     - role::icinga2_agent:install
@@ -14,7 +14,7 @@
     icinga2_agent_packages_enablerepo: "{{ icinga2_agent_packages_enablerepo_override }}"
   when:
     - icinga2_agent_packages_enablerepo_override | length > 0
-    - ansible_os_family == 'RedHat'
+    - ansible_facts.os_family == 'RedHat'
   tags:
     - role::icinga2_agent
     - role::icinga2_agent:install
@@ -24,7 +24,7 @@
     icinga2_agent_packages: "{{ icinga2_agent_packages_override }}"
   when:
     - icinga2_agent_packages_override | length > 0
-    - ansible_os_family == 'RedHat'
+    - ansible_facts.os_family == 'RedHat'
   tags:
     - role::icinga2_agent
     - role::icinga2_agent:install
