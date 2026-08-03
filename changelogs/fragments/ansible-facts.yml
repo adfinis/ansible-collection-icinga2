@@ -1,3 +1,0 @@
----
-minor_changes:
-  - all roles now use the ansible_facts directory instead of the deprecated, injected variables.
