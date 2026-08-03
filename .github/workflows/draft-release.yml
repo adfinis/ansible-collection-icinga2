@@ -1,0 +1,18 @@
+---
+name: Draft release
+
+on: # yamllint disable-line rule:truthy
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  draft_release:
+    permissions:
+      contents: write
+      pull-requests: read
+    uses: ansible/ansible-content-actions/.github/workflows/draft_release.yaml@7dc7e15a53c2ae8bd092461e53dafd6627e34ac6 # v1.1.0
+    with:
+      repo: ${{ github.repository }}
+    secrets:
+      BOT_PAT: ${{ secrets.BOT_PAT }}
