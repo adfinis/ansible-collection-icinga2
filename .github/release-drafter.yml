@@ -36,6 +36,8 @@ autolabeler:
     title: ['/^(refactor|style)(\(.+\))?:/']
   - label: skip-changelog
     title: ['/^(chore|ci|test|build|docs)(\(.+\))?:/']
+  - label: skip-changelog
+    branch: ['/^chore-draft-release-/']
 
 change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
 change-title-escapes: '\<*_&'
