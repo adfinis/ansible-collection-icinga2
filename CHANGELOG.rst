@@ -4,6 +4,14 @@ Adfinis Icinga2 Collection Release Notes
 
 .. contents:: Topics
 
+v0.1.2
+======
+
+Bugfixes
+--------
+
+- fix!: Don't apply HTTP proxy settings to delegated ticket API host (https://github.com/adfinis/ansible-collection-icinga2/pull/15)
+
 v0.1.1
 ======
 
