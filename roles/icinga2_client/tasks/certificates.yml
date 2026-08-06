@@ -44,6 +44,7 @@
     body:
       cn: "{{ inventory_hostname }}"
     return_content: true
+    use_proxy: "{{ icinga2_client_ticket_api_use_proxy }}"
   register: icinga2_client_register_ticket_response
   delegate_to: "{{ icinga2_client_ticket_api_delegate }}"
   # Also set as variable: an ansible_become var from inventory would

@@ -39,6 +39,12 @@ icinga2_client_ticket_api_validate_certs: true
 # Where the ticket API call will be deletegated to.
 icinga2_client_ticket_api_delegate: localhost
 
+# When delegating the ansible.builtin.uri call to the ticket API to e.g. localhost,
+# the original host's environment variables get delegated as well by default,
+# including any http_proxy/https_proxy variable.
+# This is usually not desired, but may be reenabled here.
+icinga2_client_ticket_api_use_proxy: false
+
 # Set to false to disable no_log on all tasks of this role.
 # Warning: this exposes credentials.
 icinga2_client_no_log: true
