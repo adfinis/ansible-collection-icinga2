@@ -1,8 +1,12 @@
 ---
 ancestor:
 releases:
+  0.1.2:
+    changes:
+      bugfixes:
+        - "fix!: Don't apply HTTP proxy settings to delegated ticket API host (https://github.com/adfinis/ansible-collection-icinga2/pull/15)"
+    release_date: "2026-08-06"
   0.1.1:
-    changes: {}
     release_date: "2026-08-03"
   0.1.0:
     changes:
