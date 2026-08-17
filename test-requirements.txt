@@ -11,7 +11,7 @@ jsonschema-specifications==2025.9.1
 packaging==26.3
 pluggy==1.6.0
 pycparser==3.0 ; implementation_name != 'PyPy'
-pygments==2.20.0
+pygments==2.21.0
 pytest==9.1.1
 pytest-ansible==26.8.0
 pytest-xdist==3.8.0
