@@ -11,7 +11,7 @@
 - name: Generate the mariadb certificate in a helper container
   containers.podman.podman_container:
     name: "{{ molecule_mariadb_container }}-tls-helper"
-    image: docker.io/library/mariadb:12.3@sha256:ab1c3dd381940233af12512b97d47b508fd3a0f17fbe3ba388739b7bc17cbc0b
+    image: docker.io/library/mariadb:12.3@sha256:805c8e104bd563d5bfa24fadd3f31cd419ea859cb5277f32b5dbf2db714f9ed1
     entrypoint: /bin/sh
     command:
       - -c
