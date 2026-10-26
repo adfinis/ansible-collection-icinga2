@@ -7,18 +7,18 @@ requires-python = ">=3.12"
 [dependency-groups]
 test = [
     "pytest==9.1.1",
-    "pytest-ansible==26.8.0",
+    "pytest-ansible==26.10.0",
     "pytest-xdist==3.8.0",
 ]
 dev = [
     { include-group = "test" },
-    "ansible==14.3.1",
-    "ansible-lint==26.8.0",
+    "ansible==14.5.0",
+    "ansible-lint==26.10.1",
     "yamllint==1.38.0",
-    "molecule==26.8.0",
-    "ruff==0.16.6",
-    "pre-commit==4.6.2",
-    "antsibull-changelog==0.35.1",
+    "molecule==26.10.0",
+    "ruff==0.17.2",
+    "pre-commit==4.7.0",
+    "antsibull-changelog==0.36.0",
 ]
 
 [tool.uv]
