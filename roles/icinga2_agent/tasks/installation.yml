@@ -111,13 +111,16 @@
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
+
 - name: Configure icinga epel repository
   ansible.builtin.yum_repository:
     name: icinga-stable-release
     description: icinga2 latest repository
     baseurl: "{{ icinga2_agent_yum.repo }}"
     gpgkey: "{{ icinga2_agent_yum.key }}"
-  when: ansible_facts.os_family == 'RedHat'
+  when:
+    - ansible_facts.os_family == 'RedHat'
+    - ansible_facts.distribution_major_version | int < 8
 
 - name: Configure extra yum repos
   ansible.builtin.yum_repository:
