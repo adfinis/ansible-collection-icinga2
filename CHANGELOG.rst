@@ -4,6 +4,15 @@ Adfinis Icinga2 Collection Release Notes
 
 .. contents:: Topics
 
+v0.1.3
+======
+
+Bugfixes
+--------
+
+- fix(icinga2_agent): don't configure public icinga yum repo on EL >= 8 (https://github.com/adfinis/ansible-collection-icinga2/pull/82)
+- fix: don't depend on lsb.id which is often missing (https://github.com/adfinis/ansible-collection-icinga2/pull/63)
+
 v0.1.2
 ======
 
