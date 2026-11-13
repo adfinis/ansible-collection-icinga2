@@ -36,7 +36,9 @@ jobs:
   # workflow accepts no inputs and therefore cannot build a distro matrix.
   integration:
     name: molecule-${{ matrix.scenario }}-${{ matrix.distro }}
-    runs-on: ubuntu-latest
+    # Pinned: on ubuntu-26.04 AppArmor stops rootless podman from tearing down
+    # its network (actions/runner-images#15182). Unpin once that is deployed.
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     strategy:
